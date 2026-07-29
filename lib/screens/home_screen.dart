@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (nextVaccine != null) _buildNextVaccineCard(nextVaccine),
           if (nextVaccine != null) const SizedBox(height: 16),
           _buildProgressCard(context, stats),
-          const SizedBox(height: 90),
+          const SizedBox(height: 16),
         ],
       ),
     );
@@ -128,14 +128,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final l10n = context.l10n;
 
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.only(top: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.goodEvening, style: AppTextStyles.subtitle),
-          const SizedBox(height: 2),
-          Text(l10n.ammaGreeting, style: AppTextStyles.greeting),
-          const SizedBox(height: 16),
           Builder(
             builder: (context) {
               return InkWell(

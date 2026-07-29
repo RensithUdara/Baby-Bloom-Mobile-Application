@@ -190,7 +190,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       style: AppTextStyles.subtitle,
                     ),
                   ),
-                  const SizedBox(height: 80),
+                  const SizedBox(height: 16),
                 ],
               ),
       ),

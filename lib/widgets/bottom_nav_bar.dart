@@ -48,34 +48,35 @@ class AppBottomNav extends StatelessWidget {
       _NavItem(Icons.grid_view_rounded, l10n.more),
     ];
 
-    return SafeArea(
-      top: false,
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: AppColors.elevatedSurface,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppColors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadow,
-              blurRadius: 18,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            for (var i = 0; i < items.length; i++)
-              Expanded(
-                child: _BottomNavItem(
-                  item: items[i],
-                  selected: i == currentIndex,
-                  onTap: () => _navigate(context, i),
-                ),
+    return Container(
+      color: AppColors.elevatedSurface,
+      child: SafeArea(
+        top: false,
+        child: Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: AppColors.elevatedSurface,
+            border: Border(top: BorderSide(color: AppColors.divider)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadow,
+                blurRadius: 18,
+                offset: const Offset(0, 8),
               ),
-          ],
+            ],
+          ),
+          child: Row(
+            children: [
+              for (var i = 0; i < items.length; i++)
+                Expanded(
+                  child: _BottomNavItem(
+                    item: items[i],
+                    selected: i == currentIndex,
+                    onTap: () => _navigate(context, i),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

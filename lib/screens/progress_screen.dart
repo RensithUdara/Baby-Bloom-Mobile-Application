@@ -184,7 +184,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 80),
+          const SizedBox(height: 16),
         ],
       ),
     );

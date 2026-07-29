@@ -131,7 +131,7 @@ class _MoreScreenState extends State<MoreScreen> {
                       onTap: _signOut,
                     ),
                   ]),
-                  const SizedBox(height: 80),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),

@@ -419,7 +419,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 80),
+          const SizedBox(height: 16),
         ],
       ),
     );
