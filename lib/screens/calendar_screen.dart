@@ -11,6 +11,7 @@ import '../widgets/section_card.dart';
 import '../widgets/empty_baby_state.dart';
 import '../widgets/app_top_bar.dart';
 import '../utils/vaccine_extensions.dart';
+import 'home_screen.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -269,16 +270,28 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppTopBar(title: context.l10n.calendar),
-      body: _loading
-          ? Center(child: CircularProgressIndicator(color: AppColors.primary))
-          : _baby == null
-          ? const EmptyBabyState()
-          : _buildContent(),
-      bottomNavigationBar: const AppBottomNav(currentIndex: 2),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _goHome();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppTopBar(title: context.l10n.calendar, onBack: _goHome),
+        body: _loading
+            ? Center(child: CircularProgressIndicator(color: AppColors.primary))
+            : _baby == null
+            ? const EmptyBabyState()
+            : _buildContent(),
+        bottomNavigationBar: const AppBottomNav(currentIndex: 2),
+      ),
     );
+  }
+
+  void _goHome() {
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
   }
 
   Widget _buildContent() {
