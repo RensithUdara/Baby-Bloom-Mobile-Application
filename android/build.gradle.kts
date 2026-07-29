@@ -1,3 +1,8 @@
+buildscript {
+    val kotlinVersion = "2.2.20"
+    extra["kotlin_version"] = kotlinVersion
+}
+
 allprojects {
     repositories {
         google()
