@@ -18,6 +18,7 @@ import 'mother_profile_screen.dart';
 import 'moh_clinic_screen.dart';
 import 'emergency_contacts_screen.dart';
 import 'calendar_screen.dart';
+import 'add_baby_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,6 +30,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _loading = true;
   Baby? _baby;
+  List<Baby> _babies = [];
   List<Vaccine> _vaccines = [];
 
   @override
@@ -39,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadData() async {
     setState(() => _loading = true);
+    final babies = await DBHelper().getAllBabies();
     final baby = await DBHelper().getActiveBaby();
     List<Vaccine> vaccines = [];
     if (baby != null && baby.id != null) {
@@ -46,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     if (!mounted) return;
     setState(() {
+      _babies = babies;
       _baby = baby;
       _vaccines = vaccines;
       _loading = false;
@@ -136,14 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (context) {
               return InkWell(
                 borderRadius: BorderRadius.circular(16),
-                onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => BabyProfileScreen(babyId: baby.id!),
-                    ),
-                  );
-                  _loadData();
-                },
+                onTap: _openBabySwitcher,
                 child: Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
@@ -193,7 +190,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       Icon(
-                        Icons.chevron_right_rounded,
+                        _babies.length > 1
+                            ? Icons.keyboard_arrow_down_rounded
+                            : Icons.chevron_right_rounded,
                         color: AppColors.textSecondary,
                       ),
                     ],
@@ -205,6 +204,122 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _openBabySwitcher() async {
+    if (_babies.length <= 1) {
+      if (_baby?.id == null) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => BabyProfileScreen(babyId: _baby!.id!),
+        ),
+      );
+      _loadData();
+      return;
+    }
+
+    final selectedId = _baby?.id;
+    final selected = await showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: AppColors.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Select Baby',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                for (final baby in _babies)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () => Navigator.of(context).pop(baby.id),
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardBackground,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: baby.id == selectedId
+                                ? AppColors.primary
+                                : AppColors.divider,
+                            width: baby.id == selectedId ? 1.4 : 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: AppColors.pendingLight,
+                              child: Text(
+                                baby.name.characters.first.toUpperCase(),
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    baby.name,
+                                    style: AppTextStyles.cardTitle,
+                                  ),
+                                  Text(
+                                    context.ageLabel(baby.dob),
+                                    style: AppTextStyles.subtitle,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (baby.id == selectedId)
+                              Icon(
+                                Icons.check_circle_rounded,
+                                color: AppColors.primary,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 4),
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const AddBabyScreen()),
+                    );
+                    _loadData();
+                  },
+                  icon: const Icon(Icons.add_rounded),
+                  label: Text(context.l10n.addBaby),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (selected == null) return;
+    await DBHelper().setActiveBaby(selected);
+    _loadData();
   }
 
   Widget _buildQuickAccess() {
