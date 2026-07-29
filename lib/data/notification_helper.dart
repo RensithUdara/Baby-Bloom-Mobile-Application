@@ -4,8 +4,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
-import '../models/vaccine.dart';
+
 import '../database/db_helper.dart';
+import '../models/vaccine.dart';
 import '../screens/notification_history_screen.dart';
 import '../utils/notification_payload.dart';
 
@@ -28,7 +29,9 @@ class NotificationHelper {
     tzdata.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Asia/Colombo'));
 
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings();
     const initSettings = InitializationSettings(
       android: androidSettings,
@@ -73,10 +76,8 @@ class NotificationHelper {
 
     final title = NotificationPayload.titleFromMessage(message);
     final body = NotificationPayload.bodyFromMessage(message);
-    final notificationId = int.tryParse(
-          message.data['id']?.toString() ?? '',
-        ) ??
-        message.hashCode;
+    final notificationId =
+        int.tryParse(message.data['id']?.toString() ?? '') ?? message.hashCode;
 
     final androidDetails = AndroidNotificationDetails(
       message.data['channel_id']?.toString().trim() ??
