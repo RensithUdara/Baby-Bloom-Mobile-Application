@@ -3,9 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../models/baby.dart';
+import '../models/emergency_contact.dart';
+import '../models/growth_record.dart';
 import '../models/moh_clinic.dart';
 import '../models/mother.dart';
 import '../models/parenting_tip.dart';
+import '../models/reminder.dart';
+import '../models/vaccine.dart';
 import '../utils/app_language.dart';
 import '../utils/firebase_service.dart';
 
@@ -120,6 +124,23 @@ class FirebaseContentRepository {
     return db.collection('users').doc(uid);
   }
 
+  static Future<void> saveUserAccount({String? displayName}) async {
+    final userDoc = _userDoc;
+    final user = FirebaseAuth.instance.currentUser;
+    if (userDoc == null || user == null) return;
+
+    await userDoc.set({
+      'uid': user.uid,
+      'email': user.email,
+      'displayName': displayName?.trim().isNotEmpty == true
+          ? displayName!.trim()
+          : user.displayName,
+      'lastLoginAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+      'createdAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
   static Future<List<FirebaseVaccineItem>> getVaccineSchedule({
     required String gender,
   }) async {
@@ -210,16 +231,152 @@ class FirebaseContentRepository {
     return null;
   }
 
+  static Future<List<MohClinic>> getMohClinics() async {
+    final db = _db;
+    if (db == null) return const [];
+
+    try {
+      final snapshot = await db.collection('moh_clinics').get();
+      final clinics = snapshot.docs
+          .map((doc) => _clinicFromMap(doc.data()))
+          .toList();
+      clinics.sort((a, b) => a.mohArea.compareTo(b.mohArea));
+      return clinics;
+    } catch (_) {
+      return const [];
+    }
+  }
+
   static Future<void> saveBaby(Baby baby) async {
     final userDoc = _userDoc;
     if (userDoc == null || baby.id == null) return;
     await userDoc.collection('babies').doc('${baby.id}').set(baby.toMap());
   }
 
+  static Future<void> deleteBaby(int babyId) async {
+    final userDoc = _userDoc;
+    if (userDoc == null) return;
+    await userDoc.collection('babies').doc('$babyId').delete();
+
+    final vaccines = await userDoc
+        .collection('vaccines')
+        .where('babyId', isEqualTo: babyId)
+        .get();
+    for (final doc in vaccines.docs) {
+      await doc.reference.delete();
+    }
+  }
+
   static Future<void> saveMother(Mother mother) async {
     final userDoc = _userDoc;
     if (userDoc == null || mother.id == null) return;
     await userDoc.collection('mothers').doc('${mother.id}').set(mother.toMap());
+  }
+
+  static Future<void> deleteMother(int id) async {
+    final userDoc = _userDoc;
+    if (userDoc == null) return;
+    await userDoc.collection('mothers').doc('$id').delete();
+  }
+
+  static Future<void> saveVaccine(Vaccine vaccine) async {
+    final userDoc = _userDoc;
+    if (userDoc == null || vaccine.id == null) return;
+    await userDoc
+        .collection('vaccines')
+        .doc('${vaccine.id}')
+        .set(vaccine.toMap());
+  }
+
+  static Future<void> updateVaccineStatus({
+    required int vaccineId,
+    required String status,
+    required DateTime? completedDate,
+  }) async {
+    final userDoc = _userDoc;
+    if (userDoc == null) return;
+    await userDoc.collection('vaccines').doc('$vaccineId').set({
+      'id': vaccineId,
+      'status': status,
+      'completedDate': completedDate?.toIso8601String(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
+  static Future<void> saveEmergencyContact(EmergencyContact contact) async {
+    final userDoc = _userDoc;
+    if (userDoc == null || contact.id == null) return;
+    await userDoc
+        .collection('emergency_contacts')
+        .doc('${contact.id}')
+        .set(contact.toMap());
+  }
+
+  static Future<void> deleteEmergencyContact(int id) async {
+    final userDoc = _userDoc;
+    if (userDoc == null) return;
+    await userDoc.collection('emergency_contacts').doc('$id').delete();
+  }
+
+  static Future<void> saveGrowthRecord(GrowthRecord record) async {
+    final userDoc = _userDoc;
+    if (userDoc == null || record.id == null) return;
+    await userDoc
+        .collection('growth_records')
+        .doc('${record.id}')
+        .set(record.toMap());
+  }
+
+  static Future<void> deleteGrowthRecord(int id) async {
+    final userDoc = _userDoc;
+    if (userDoc == null) return;
+    await userDoc.collection('growth_records').doc('$id').delete();
+  }
+
+  static Future<void> saveReminder(Reminder reminder) async {
+    final userDoc = _userDoc;
+    if (userDoc == null || reminder.id == null) return;
+    await userDoc
+        .collection('reminders')
+        .doc('${reminder.id}')
+        .set(reminder.toMap());
+  }
+
+  static Future<void> deleteReminder(int id) async {
+    final userDoc = _userDoc;
+    if (userDoc == null) return;
+    await userDoc.collection('reminders').doc('$id').delete();
+  }
+
+  static Future<void> saveNotificationHistory({
+    required int id,
+    required int? babyId,
+    required String title,
+    required String body,
+    required DateTime scheduledDate,
+  }) async {
+    final userDoc = _userDoc;
+    if (userDoc == null) return;
+    await userDoc.collection('notification_history').doc('$id').set({
+      'id': id,
+      'babyId': babyId,
+      'title': title,
+      'body': body,
+      'scheduledDate': scheduledDate.toIso8601String(),
+    });
+  }
+
+  static Future<void> deleteUpcomingNotificationHistory() async {
+    final userDoc = _userDoc;
+    if (userDoc == null) return;
+    final now = DateTime.now().toIso8601String();
+    final snapshot = await userDoc
+        .collection('notification_history')
+        .where('scheduledDate', isGreaterThan: now)
+        .get();
+    for (final doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
   }
 
   static Future<Baby?> fetchBaby(int id) async {

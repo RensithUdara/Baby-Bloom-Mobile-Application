@@ -235,7 +235,9 @@ class DBHelper {
 
   Future<int> deleteMother(int id) async {
     final db = await database;
-    return await db.delete('mothers', where: 'id = ?', whereArgs: [id]);
+    final result = await db.delete('mothers', where: 'id = ?', whereArgs: [id]);
+    await FirebaseContentRepository.deleteMother(id);
+    return result;
   }
 
   Future<void> setClinicPhoto(String mohArea, String photoPath) async {
@@ -260,7 +262,19 @@ class DBHelper {
 
   Future<int> insertEmergencyContact(EmergencyContact contact) async {
     final db = await database;
-    return await db.insert('emergency_contacts', contact.toMap()..remove('id'));
+    final id = await db.insert(
+      'emergency_contacts',
+      contact.toMap()..remove('id'),
+    );
+    await FirebaseContentRepository.saveEmergencyContact(
+      EmergencyContact(
+        id: id,
+        name: contact.name,
+        phone: contact.phone,
+        relation: contact.relation,
+      ),
+    );
+    return id;
   }
 
   Future<List<EmergencyContact>> getAllEmergencyContacts() async {
@@ -271,11 +285,13 @@ class DBHelper {
 
   Future<int> deleteEmergencyContact(int id) async {
     final db = await database;
-    return await db.delete(
+    final result = await db.delete(
       'emergency_contacts',
       where: 'id = ?',
       whereArgs: [id],
     );
+    await FirebaseContentRepository.deleteEmergencyContact(id);
+    return result;
   }
 
   Future<int> insertBaby(Baby baby) async {
@@ -312,6 +328,7 @@ class DBHelper {
       final vaccineId = await db.insert('vaccines', vaccine.toMap());
 
       vaccine.id = vaccineId;
+      await FirebaseContentRepository.saveVaccine(vaccine);
       await NotificationHelper().scheduleVaccineReminders(vaccine, baby.name);
     }
 
@@ -358,12 +375,21 @@ class DBHelper {
   Future<int> deleteBaby(int babyId) async {
     final db = await database;
     await db.delete('vaccines', where: 'babyId = ?', whereArgs: [babyId]);
-    return await db.delete('babies', where: 'id = ?', whereArgs: [babyId]);
+    final result = await db.delete(
+      'babies',
+      where: 'id = ?',
+      whereArgs: [babyId],
+    );
+    await FirebaseContentRepository.deleteBaby(babyId);
+    return result;
   }
 
   Future<int> insertVaccine(Vaccine vaccine) async {
     final db = await database;
-    return await db.insert('vaccines', vaccine.toMap());
+    final id = await db.insert('vaccines', vaccine.toMap());
+    vaccine.id = id;
+    await FirebaseContentRepository.saveVaccine(vaccine);
+    return id;
   }
 
   Future<List<Vaccine>> getVaccinesForBaby(int babyId) async {
@@ -407,6 +433,12 @@ class DBHelper {
       await NotificationHelper().cancelVaccineReminders(vaccineId);
     }
 
+    await FirebaseContentRepository.updateVaccineStatus(
+      vaccineId: vaccineId,
+      status: status,
+      completedDate: completedDate,
+    );
+
     return result;
   }
 
@@ -423,7 +455,10 @@ class DBHelper {
 
   Future<int> insertGrowthRecord(GrowthRecord record) async {
     final db = await database;
-    return await db.insert('growth_records', record.toMap()..remove('id'));
+    final id = await db.insert('growth_records', record.toMap()..remove('id'));
+    record.id = id;
+    await FirebaseContentRepository.saveGrowthRecord(record);
+    return id;
   }
 
   Future<List<GrowthRecord>> getGrowthRecordsForBaby(int babyId) async {
@@ -439,12 +474,21 @@ class DBHelper {
 
   Future<int> deleteGrowthRecord(int id) async {
     final db = await database;
-    return await db.delete('growth_records', where: 'id = ?', whereArgs: [id]);
+    final result = await db.delete(
+      'growth_records',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    await FirebaseContentRepository.deleteGrowthRecord(id);
+    return result;
   }
 
   Future<int> insertReminder(Reminder reminder) async {
     final db = await database;
-    return await db.insert('reminders', reminder.toMap()..remove('id'));
+    final id = await db.insert('reminders', reminder.toMap()..remove('id'));
+    reminder.id = id;
+    await FirebaseContentRepository.saveReminder(reminder);
+    return id;
   }
 
   Future<List<Reminder>> getAllReminders() async {
@@ -455,7 +499,13 @@ class DBHelper {
 
   Future<int> deleteReminder(int id) async {
     final db = await database;
-    return await db.delete('reminders', where: 'id = ?', whereArgs: [id]);
+    final result = await db.delete(
+      'reminders',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    await FirebaseContentRepository.deleteReminder(id);
+    return result;
   }
 
   Future<int> insertNotificationHistory({
@@ -465,12 +515,20 @@ class DBHelper {
     required DateTime scheduledDate,
   }) async {
     final db = await database;
-    return await db.insert('notification_history', {
+    final id = await db.insert('notification_history', {
       'babyId': babyId,
       'title': title,
       'body': body,
       'scheduledDate': scheduledDate.toIso8601String(),
     });
+    await FirebaseContentRepository.saveNotificationHistory(
+      id: id,
+      babyId: babyId,
+      title: title,
+      body: body,
+      scheduledDate: scheduledDate,
+    );
+    return id;
   }
 
   Future<List<Map<String, dynamic>>> getNotificationHistory() async {
@@ -486,6 +544,7 @@ class DBHelper {
       where: 'scheduledDate > ?',
       whereArgs: [now],
     );
+    await FirebaseContentRepository.deleteUpcomingNotificationHistory();
   }
 
   Future<void> closeDB() async {
