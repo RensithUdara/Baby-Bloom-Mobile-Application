@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'data/notification_helper.dart';
-import 'data/firebase_content_repository.dart';
 import 'l10n/l10n.dart';
 import 'utils/app_language.dart';
 import 'utils/firebase_service.dart';
@@ -11,7 +10,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await FirebaseService.initialize();
-  await FirebaseContentRepository.seedDefaultContent();
 
   // Initialize Notifications
   await NotificationHelper().init();
