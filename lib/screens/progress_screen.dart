@@ -55,8 +55,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppTopBar(
-        title: l10n.progress,
-        subtitle: l10n.vaccineProgress,
+        title: l10n.vaccineProgress,
         actions: [
           AppBarActionButton(
             tooltip: 'Options',

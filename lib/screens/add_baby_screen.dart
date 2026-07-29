@@ -129,10 +129,7 @@ class _AddBabyScreenState extends State<AddBabyScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppTopBar(
-        title: widget.isEditing ? l10n.editBaby : l10n.addBaby,
-        subtitle: l10n.basicDetails,
-      ),
+      appBar: AppTopBar(title: widget.isEditing ? l10n.editBaby : l10n.addBaby),
       body: SafeArea(
         child: Form(
           key: _formKey,

@@ -95,8 +95,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppTopBar(
-        title: l10n.babyProfile,
-        subtitle: _baby?.name,
+        title: _baby == null ? l10n.babyProfile : '${_baby!.name} Profile',
         actions: [
           AppBarActionButton(
             icon: Icons.edit_rounded,

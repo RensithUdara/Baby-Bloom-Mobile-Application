@@ -112,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppTopBar(title: l10n.settings, subtitle: l10n.language),
+      appBar: AppTopBar(title: l10n.settings),
       body: SafeArea(
         child: _loading
             ? Center(child: CircularProgressIndicator(color: AppColors.primary))

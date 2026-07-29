@@ -47,10 +47,7 @@ class _VaccineDetailsScreenState extends State<VaccineDetailsScreen> {
     final isCompleted = status == VaccineStatus.completed;
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppTopBar(
-        title: context.l10n.vaccineDetails,
-        subtitle: _vaccine.vaccineName,
-      ),
+      appBar: AppTopBar(title: _vaccine.vaccineName),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(20),

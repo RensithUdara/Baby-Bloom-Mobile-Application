@@ -75,10 +75,7 @@ class _MotherProfileScreenState extends State<MotherProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppTopBar(
-        title: context.l10n.motherProfile,
-        subtitle: context.l10n.mohArea,
-      ),
+      appBar: AppTopBar(title: context.l10n.motherProfile),
       body: SafeArea(
         child: loading
             ? const Center(child: CircularProgressIndicator())

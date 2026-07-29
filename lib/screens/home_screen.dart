@@ -62,8 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.background,
       appBar: AppTopBar(
         title: 'BabyBloom',
-        subtitle: context.l10n.ammaGreeting,
         showBack: false,
+        centerTitle: true,
+        homeStyle: true,
         actions: [
           AppBarActionButton(
             icon: Icons.notifications_none_rounded,

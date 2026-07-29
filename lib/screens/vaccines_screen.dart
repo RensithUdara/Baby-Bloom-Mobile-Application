@@ -79,8 +79,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppTopBar(
-        title: l10n.vaccines,
-        subtitle: _baby?.name,
+        title: _baby == null ? l10n.vaccines : '${_baby!.name} Vaccines',
         onBack: () {
           if (Navigator.of(context).canPop()) {
             Navigator.of(context).pop();

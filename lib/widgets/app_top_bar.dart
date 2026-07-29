@@ -6,6 +6,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String? subtitle;
   final bool showBack;
   final bool centerTitle;
+  final bool homeStyle;
   final List<Widget>? actions;
   final VoidCallback? onBack;
 
@@ -15,12 +16,13 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.subtitle,
     this.showBack = true,
     this.centerTitle = false,
+    this.homeStyle = false,
     this.actions,
     this.onBack,
   });
 
   @override
-  Size get preferredSize => Size.fromHeight(subtitle == null ? 62 : 70);
+  Size get preferredSize => const Size.fromHeight(62);
 
   @override
   Widget build(BuildContext context) {
@@ -92,64 +94,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       centerTitle: centerTitle,
       titleSpacing: showBack ? 10 : 16,
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (!showBack) ...[
-            Container(
-              width: 38,
-              height: 38,
-              padding: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.94),
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.10),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
-            ),
-            const SizedBox(width: 12),
-          ],
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: centerTitle
-                  ? CrossAxisAlignment.center
-                  : CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 25,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: 1),
-                  Text(
-                    subtitle!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.86),
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
+      title: homeStyle ? _HomeTitle(title: title) : _PageTitle(title: title),
       actions: actions == null
           ? null
           : [
@@ -159,6 +104,72 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
                   child: action,
                 ),
             ],
+    );
+  }
+}
+
+class _PageTitle extends StatelessWidget {
+  final String title;
+
+  const _PageTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 25,
+        fontWeight: FontWeight.w900,
+      ),
+    );
+  }
+}
+
+class _HomeTitle extends StatelessWidget {
+  final String title;
+
+  const _HomeTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 38,
+          height: 38,
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.94),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.10),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
+        ),
+        const SizedBox(width: 10),
+        Flexible(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -271,10 +271,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppTopBar(
-        title: context.l10n.calendar,
-        subtitle: context.l10n.upcomingEvents,
-      ),
+      appBar: AppTopBar(title: context.l10n.calendar),
       body: _loading
           ? Center(child: CircularProgressIndicator(color: AppColors.primary))
           : _baby == null

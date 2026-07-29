@@ -52,11 +52,7 @@ class _MoreScreenState extends State<MoreScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppTopBar(
-        title: l10n.more,
-        subtitle: l10n.settings,
-        showBack: false,
-      ),
+      appBar: AppTopBar(title: l10n.more, showBack: false),
       body: _loading
           ? Center(child: CircularProgressIndicator(color: AppColors.primary))
           : SafeArea(
