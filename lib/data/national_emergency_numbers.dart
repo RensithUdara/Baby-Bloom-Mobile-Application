@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/emergency_contact.dart';
 
-/// Sri Lanka island-wide emergency helplines. These are well-known public
-/// numbers - please verify locally if in doubt.
 class NationalEmergencyNumbersData {
   static const List<NationalEmergencyNumber> numbers = [
     NationalEmergencyNumber(

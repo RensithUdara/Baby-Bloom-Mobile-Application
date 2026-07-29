@@ -11,13 +11,10 @@ void main() async {
 
   await FirebaseService.initialize();
 
-  // Initialize Notifications
   await NotificationHelper().init();
 
-  // Load saved language
   await AppLanguage.load();
 
-  // Load saved theme
   await AppTheme.load();
 
   runApp(const BabyBloomApp());
@@ -90,7 +87,6 @@ class BabyBloomApp extends StatelessWidget {
                 ),
               ),
 
-              // Splash Screen eka app open wena gaman pennanawa
               home: const SplashScreen(),
             );
           },
