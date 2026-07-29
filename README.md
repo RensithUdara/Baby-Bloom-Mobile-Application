@@ -55,9 +55,11 @@ lib/
 
 Before running the app, make sure you have:
 
-- Flutter SDK installed
+- Flutter SDK installed and added to your PATH
+- Android Studio or Xcode installed for device builds
 - An emulator or physical device connected
-- Firebase configured for your environment
+- A Firebase project created in the Firebase console
+- Internet access for Firebase and notification services
 
 ## ▶️ Getting started
 
@@ -73,14 +75,168 @@ Before running the app, make sure you have:
    ```
 
 3. Configure Firebase
-   - Make sure your Firebase project is set up
-   - Add the required Firebase configuration files for Android/iOS/Web
-   - If needed, generate options with FlutterFire
+   - Create a Firebase project at https://console.firebase.google.com/
+   - Enable the services used by the app, including:
+     - Authentication
+     - Firestore Database
+     - Cloud Messaging
+     - Analytics (optional but recommended)
+   - Register your app for Android and iOS in the Firebase console
+   - Download the configuration files:
+     - Android: google-services.json
+     - iOS: GoogleService-Info.plist
+   - Place them in the correct platform folders:
+     - Android: android/app/google-services.json
+     - iOS: ios/Runner/GoogleService-Info.plist
+   - If you are using FlutterFire, generate the configuration with:
+     ```bash
+     flutterfire configure
+     ```
+   - This project already includes Firebase initialization code in the app entry point, so the configuration files must be present before running the app
 
 4. Run the app
    ```bash
    flutter run
    ```
+
+## 🔥 Firebase setup guide
+
+### 1) Create a Firebase project
+
+1. Open the Firebase console
+2. Click Add project
+3. Enter your project name
+4. Follow the setup prompts to create the project
+
+### 2) Enable required Firebase services
+
+In your Firebase project dashboard, enable:
+
+- Authentication
+- Firestore Database
+- Cloud Messaging
+- Analytics (recommended)
+
+### 3) Add Android app
+
+1. In Firebase, click Add app > Android
+2. Enter the Android package name
+3. Download google-services.json
+4. Place it in android/app/
+5. Make sure the Google services plugin is applied in android/build.gradle and android/app/build.gradle
+
+### 4) Add iOS app
+
+1. In Firebase, click Add app > iOS
+2. Enter your iOS bundle identifier
+3. Download GoogleService-Info.plist
+4. Add it to the Xcode project under ios/Runner/
+5. Ensure the Firebase iOS SDK is configured properly in your project
+
+### 5) Firebase rules and Firestore setup
+
+If you use Firestore, make sure your database rules allow read/write access for development:
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+
+> For production, replace this with stricter rules.
+
+### 6) Local development tips
+
+- If Firebase initialization fails, confirm the configuration files are correctly placed
+- Make sure the app package name / bundle identifier matches the values you registered in Firebase
+- If you change your app ID, regenerate the Firebase config files
+
+## 🤖 Android deployment guide
+
+### Build prerequisites
+
+- Install Android Studio
+- Install the Android SDK
+- Create or select an Android emulator or connect a physical device
+
+### Check device connection
+
+```bash
+flutter devices
+```
+
+### Run on Android
+
+```bash
+flutter run -d <device-id>
+```
+
+### Build an APK
+
+```bash
+flutter build apk
+```
+
+### Build an App Bundle (recommended for Play Store)
+
+```bash
+flutter build appbundle
+```
+
+The generated output will be placed in:
+
+- APK: build/app/outputs/flutter-apk/app-release.apk
+- App Bundle: build/app/outputs/bundle/release/app-release.aab
+
+### Android signing (for release builds)
+
+Before publishing to the Play Store, create a keystore and configure signing:
+
+```bash
+keytool -genkey -v -keystore ~/upload-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+```
+
+Then configure signing in android/app/build.gradle and upload the release bundle to Google Play.
+
+## 🍎 iOS deployment guide
+
+### Build prerequisites
+
+- Install Xcode from the App Store
+- Sign in with your Apple Developer account
+- Set up an Apple team in Xcode
+
+### Run on iOS simulator
+
+```bash
+flutter run
+```
+
+### Build for iOS
+
+```bash
+flutter build ios
+```
+
+### Prepare for App Store submission
+
+1. Open ios/Runner.xcworkspace in Xcode
+2. Select your signing team
+3. Set the bundle identifier
+4. Enable capabilities such as push notifications if required
+5. Archive the app from Xcode
+6. Upload the build to App Store Connect
+
+### Important iOS notes
+
+- Firebase services on iOS require the GoogleService-Info.plist file
+- Push notifications may require APNs configuration
+- If the build fails, verify the Xcode signing settings and provisioning profile
 
 ## 🔧 Useful commands
 
