@@ -1,0 +1,37 @@
+name: babybloom
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  intl: ^0.20.2
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.9.4
+  percent_indicator: ^4.2.3
+  image_picker: ^1.0.7
+  path_provider: ^2.1.2
+  url_launcher: ^6.3.0
+  file_picker: ^8.1.2
+  shared_preferences: ^2.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  assets:
+    - assets/images/
