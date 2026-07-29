@@ -76,34 +76,38 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppTopBar(
-        title: _baby == null ? l10n.vaccines : '${_baby!.name} Vaccines',
-        onBack: () {
-          if (Navigator.of(context).canPop()) {
-            Navigator.of(context).pop();
-          } else {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-            );
-          }
-        },
-        actions: [
-          AppBarActionButton(
-            tooltip: 'Search',
-            onPressed: () {},
-            icon: Icons.search_rounded,
-          ),
-        ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _goHome();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppTopBar(
+          title: _baby == null ? l10n.vaccines : '${_baby!.name} Vaccines',
+          onBack: _goHome,
+          actions: [
+            AppBarActionButton(
+              tooltip: 'Search',
+              onPressed: () {},
+              icon: Icons.search_rounded,
+            ),
+          ],
+        ),
+        body: _loading
+            ? Center(child: CircularProgressIndicator(color: AppColors.primary))
+            : _baby == null
+            ? const EmptyBabyState()
+            : _buildContent(),
+        bottomNavigationBar: const AppBottomNav(currentIndex: 1),
       ),
-      body: _loading
-          ? Center(child: CircularProgressIndicator(color: AppColors.primary))
-          : _baby == null
-          ? const EmptyBabyState()
-          : _buildContent(),
-      bottomNavigationBar: const AppBottomNav(currentIndex: 1),
     );
+  }
+
+  void _goHome() {
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
   }
 
   Widget _buildContent() {
