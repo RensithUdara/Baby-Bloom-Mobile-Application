@@ -1,7 +1,6 @@
+import 'package:babybloom/utils/notification_payload.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:babybloom/utils/notification_payload.dart';
 
 void main() {
   group('NotificationPayload', () {
@@ -26,8 +25,14 @@ void main() {
         data: {'title': 'New tip available', 'body': 'Tap to open the app'},
       );
 
-      expect(NotificationPayload.titleFromMessage(message), 'New tip available');
-      expect(NotificationPayload.bodyFromMessage(message), 'Tap to open the app');
+      expect(
+        NotificationPayload.titleFromMessage(message),
+        'New tip available',
+      );
+      expect(
+        NotificationPayload.bodyFromMessage(message),
+        'Tap to open the app',
+      );
     });
 
     test('uses screen and route data to derive the notification target', () {
