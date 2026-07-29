@@ -37,19 +37,11 @@ class NotificationHelper {
     }
   }
 
-  /// Settings screen eke toggle eka anuwa, notifications enable/disable
-  /// dænma. Default eka 'true' (kalinma thibba behavior eka).
   Future<bool> isEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_kNotificationsEnabled) ?? true;
   }
 
-  /// Ek vaccine ekakata alert 3k schedule karanawa:
-  /// dawas 3kata kalin, dawasakata kalin, edina udee.
-  /// Ithuruwa, ee 3ma reminders "Notification History" screen ekata
-  /// pennanna DB ekata save karanawa.
-  /// Notifications settings eken OFF karala thiyenawa nam, meka
-  /// silently skip wenawa (kisima alert ekak schedule wenne na).
   Future<void> scheduleVaccineReminders(
     Vaccine vaccine,
     String babyName,
@@ -95,8 +87,6 @@ class NotificationHelper {
     );
   }
 
-  /// _scheduleOne call karala, eeka future ekaka nam (schedule una nam)
-  /// history table ekatath save karanawa.
   Future<void> _scheduleAndTrack({
     required int id,
     required int babyId,
@@ -153,15 +143,12 @@ class NotificationHelper {
     return true;
   }
 
-  /// Vaccine ekak 'done' kalada, ee ekata schedule karapu alerts 3 cancel karanawa
   Future<void> cancelVaccineReminders(int vaccineId) async {
     await _plugin.cancel(vaccineId * 10 + 1);
     await _plugin.cancel(vaccineId * 10 + 2);
     await _plugin.cancel(vaccineId * 10 + 3);
   }
 
-  /// Settings toggle eka OFF karaddi call karanawa — pending vaccine
-  /// okkomatama schedule wela thiyena alerts cancel karanawa.
   Future<void> cancelAllReminders() async {
     final pending = await DBHelper().getAllPendingVaccinesWithBabyNames();
     for (final item in pending) {
@@ -170,8 +157,6 @@ class NotificationHelper {
     }
   }
 
-  /// Settings toggle eka ON karaddi call karanawa — pending vaccine
-  /// okkomatama alerts aluthen schedule karanawa.
   Future<void> rescheduleAllReminders() async {
     final pending = await DBHelper().getAllPendingVaccinesWithBabyNames();
     for (final item in pending) {
