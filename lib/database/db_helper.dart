@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/baby.dart';
 import '../models/vaccine.dart';
 import '../models/mother.dart';
@@ -11,6 +12,8 @@ import '../data/notification_helper.dart';
 
 class DBHelper {
   static final DBHelper _instance = DBHelper._internal();
+  static const _activeBabyKey = 'active_baby_id';
+
   factory DBHelper() => _instance;
   DBHelper._internal();
 
@@ -332,6 +335,7 @@ class DBHelper {
       await NotificationHelper().scheduleVaccineReminders(vaccine, baby.name);
     }
 
+    await setActiveBaby(babyId);
     return babyId;
   }
 
@@ -357,7 +361,23 @@ class DBHelper {
   Future<Baby?> getActiveBaby() async {
     final babies = await getAllBabies();
     if (babies.isEmpty) return FirebaseContentRepository.fetchFirstBaby();
+    final selectedId = await getActiveBabyId();
+    if (selectedId != null) {
+      for (final baby in babies) {
+        if (baby.id == selectedId) return baby;
+      }
+    }
     return babies.first;
+  }
+
+  Future<int?> getActiveBabyId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_activeBabyKey);
+  }
+
+  Future<void> setActiveBaby(int babyId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_activeBabyKey, babyId);
   }
 
   Future<int> updateBaby(Baby baby) async {
@@ -380,6 +400,16 @@ class DBHelper {
       where: 'id = ?',
       whereArgs: [babyId],
     );
+    final selectedId = await getActiveBabyId();
+    if (selectedId == babyId) {
+      final remaining = await getAllBabies();
+      final prefs = await SharedPreferences.getInstance();
+      if (remaining.isEmpty || remaining.first.id == null) {
+        await prefs.remove(_activeBabyKey);
+      } else {
+        await prefs.setInt(_activeBabyKey, remaining.first.id!);
+      }
+    }
     await FirebaseContentRepository.deleteBaby(babyId);
     return result;
   }
