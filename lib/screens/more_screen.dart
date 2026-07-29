@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../models/baby.dart';
 import '../theme/app_theme.dart';
@@ -16,6 +17,7 @@ import 'add_baby_screen.dart';
 import 'notification_history_screen.dart';
 import 'backup_restore_screen.dart';
 import 'help_support_screen.dart';
+import 'auth_gate.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
@@ -117,6 +119,16 @@ class _MoreScreenState extends State<MoreScreen> {
                           builder: (_) => const HelpSupportScreen(),
                         ),
                       ),
+                    ),
+                  ]),
+                  const SizedBox(height: 20),
+                  _sectionTitle('Account'),
+                  const SizedBox(height: 10),
+                  _menuGroup([
+                    _MoreAction(
+                      icon: Icons.logout_rounded,
+                      label: 'Sign Out',
+                      onTap: _signOut,
                     ),
                   ]),
                   const SizedBox(height: 80),
@@ -376,6 +388,36 @@ class _MoreScreenState extends State<MoreScreen> {
       );
     }
     _loadData();
+  }
+
+  Future<void> _signOut() async {
+    final shouldSignOut = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sign Out'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Sign Out'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldSignOut != true) return;
+
+    await FirebaseAuth.instance.signOut();
+    if (!mounted) return;
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const AuthGate()),
+      (_) => false,
+    );
   }
 }
 
