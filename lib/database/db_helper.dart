@@ -566,6 +566,22 @@ class DBHelper {
     return await db.query('notification_history', orderBy: 'scheduledDate ASC');
   }
 
+  Future<bool> notificationHistoryExists({
+    required String title,
+    required String body,
+    required DateTime scheduledDate,
+  }) async {
+    final db = await database;
+    final existing = await db.query(
+      'notification_history',
+      columns: ['id'],
+      where: 'title = ? AND body = ? AND scheduledDate = ?',
+      whereArgs: [title, body, scheduledDate.toIso8601String()],
+      limit: 1,
+    );
+    return existing.isNotEmpty;
+  }
+
   Future<void> deleteUpcomingNotificationHistory() async {
     final db = await database;
     final now = DateTime.now().toIso8601String();
