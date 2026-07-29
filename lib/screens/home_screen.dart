@@ -189,10 +189,23 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
+                      IconButton(
+                        tooltip: l10n.addBaby,
+                        onPressed: _openAddBaby,
+                        icon: Icon(
+                          Icons.add_circle_rounded,
+                          color: AppColors.primary,
+                        ),
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.softSurface,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
                       Icon(
-                        _babies.length > 1
-                            ? Icons.keyboard_arrow_down_rounded
-                            : Icons.chevron_right_rounded,
+                        Icons.keyboard_arrow_down_rounded,
                         color: AppColors.textSecondary,
                       ),
                     ],
@@ -207,17 +220,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _openBabySwitcher() async {
-    if (_babies.length <= 1) {
-      if (_baby?.id == null) return;
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => BabyProfileScreen(babyId: _baby!.id!),
-        ),
-      );
-      _loadData();
-      return;
-    }
-
     final selectedId = _baby?.id;
     final selected = await showModalBottomSheet<int>(
       context: context,
@@ -300,12 +302,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 const SizedBox(height: 4),
                 OutlinedButton.icon(
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const AddBabyScreen()),
-                    );
-                    _loadData();
+                  onPressed: () {
+                    Navigator.of(context).pop(-1);
                   },
                   icon: const Icon(Icons.add_rounded),
                   label: Text(context.l10n.addBaby),
@@ -318,7 +316,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     if (selected == null) return;
+    if (selected == -1) {
+      await _openAddBaby();
+      return;
+    }
     await DBHelper().setActiveBaby(selected);
+    _loadData();
+  }
+
+  Future<void> _openAddBaby() async {
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const AddBabyScreen()));
     _loadData();
   }
 
