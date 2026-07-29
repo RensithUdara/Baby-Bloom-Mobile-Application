@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -31,7 +31,8 @@ class FirebaseService {
 
   static bool get isInitialized => _initialized;
   static Object? get lastError => _lastError;
-  static Stream<RemoteMessage> get messageStream => _messageStreamController.stream;
+  static Stream<RemoteMessage> get messageStream =>
+      _messageStreamController.stream;
 
   static Future<void> _saveFcmToken(String token) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
