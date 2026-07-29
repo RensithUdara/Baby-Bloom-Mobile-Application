@@ -16,6 +16,7 @@ class NotificationHelper {
   NotificationHelper._internal();
 
   static const _kNotificationsEnabled = 'settings_notifications';
+  static const _kReminderPayloadPrefix = 'local_reminder|';
   static GlobalKey<NavigatorState>? _navigatorKey;
 
   final FlutterLocalNotificationsPlugin _plugin =
@@ -119,6 +120,7 @@ class NotificationHelper {
 
     await _scheduleAndTrack(
       id: vaccine.id! * 10 + 1,
+      babyId: vaccine.babyId,
       title: '$babyName vaccine reminder',
       body: '${vaccine.vaccineName} is due in 3 days',
       scheduledDate: DateTime(
@@ -132,6 +134,7 @@ class NotificationHelper {
 
     await _scheduleAndTrack(
       id: vaccine.id! * 10 + 2,
+      babyId: vaccine.babyId,
       title: '$babyName vaccine reminder',
       body: '${vaccine.vaccineName} is due tomorrow',
       scheduledDate: DateTime(
@@ -145,6 +148,7 @@ class NotificationHelper {
 
     await _scheduleAndTrack(
       id: vaccine.id! * 10 + 3,
+      babyId: vaccine.babyId,
       title: '$babyName vaccine reminder',
       body: '${vaccine.vaccineName} is due today',
       scheduledDate: DateTime(dueDate.year, dueDate.month, dueDate.day, 8, 0),
@@ -153,12 +157,14 @@ class NotificationHelper {
 
   Future<void> _scheduleAndTrack({
     required int id,
+    required int? babyId,
     required String title,
     required String body,
     required DateTime scheduledDate,
   }) async {
     await _scheduleOne(
       id: id,
+      babyId: babyId,
       title: title,
       body: body,
       scheduledDate: scheduledDate,
@@ -167,6 +173,7 @@ class NotificationHelper {
 
   Future<bool> _scheduleOne({
     required int id,
+    required int? babyId,
     required String title,
     required String body,
     required DateTime scheduledDate,
@@ -189,6 +196,13 @@ class NotificationHelper {
       body,
       tzScheduledDate,
       details,
+      payload: _reminderPayload(
+        id: id,
+        babyId: babyId,
+        title: title,
+        body: body,
+        scheduledDate: scheduledDate,
+      ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
