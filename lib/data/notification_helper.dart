@@ -1,9 +1,13 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tzdata;
+import 'package:timezone/timezone.dart' as tz;
 import '../models/vaccine.dart';
 import '../database/db_helper.dart';
+import '../screens/notification_history_screen.dart';
+import '../utils/notification_payload.dart';
 
 class NotificationHelper {
   static final NotificationHelper _instance = NotificationHelper._internal();
@@ -11,20 +15,32 @@ class NotificationHelper {
   NotificationHelper._internal();
 
   static const _kNotificationsEnabled = 'settings_notifications';
+  static GlobalKey<NavigatorState>? _navigatorKey;
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
+
+  void attachNavigatorKey(GlobalKey<NavigatorState> navigatorKey) {
+    _navigatorKey = navigatorKey;
+  }
 
   Future<void> init() async {
     tzdata.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Asia/Colombo'));
 
-    const androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const iosSettings = DarwinInitializationSettings();
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
     );
-    const initSettings = InitializationSettings(android: androidSettings);
 
-    await _plugin.initialize(initSettings);
+    await _plugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: _handleNotificationTap,
+    );
+
+    await DBHelper().deleteUpcomingNotificationHistory();
 
     final androidPlugin = _plugin
         .resolvePlatformSpecificImplementation<
@@ -34,12 +50,62 @@ class NotificationHelper {
     if (androidPlugin != null) {
       await androidPlugin.requestNotificationsPermission();
       await androidPlugin.requestExactAlarmsPermission();
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'firebase_push_notifications',
+          'Firebase Push Notifications',
+          description: 'Incoming Firebase push notifications',
+          importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
+        ),
+      );
     }
   }
 
   Future<bool> isEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_kNotificationsEnabled) ?? true;
+  }
+
+  Future<void> showFirebaseNotification(RemoteMessage message) async {
+    if (!await isEnabled()) return;
+
+    final title = NotificationPayload.titleFromMessage(message);
+    final body = NotificationPayload.bodyFromMessage(message);
+    final notificationId = int.tryParse(
+          message.data['id']?.toString() ?? '',
+        ) ??
+        message.hashCode;
+
+    final androidDetails = AndroidNotificationDetails(
+      message.data['channel_id']?.toString().trim() ??
+          'firebase_push_notifications',
+      message.data['channel_name']?.toString().trim() ??
+          'Firebase Push Notifications',
+      channelDescription:
+          message.data['channel_description']?.toString().trim() ??
+          'Incoming Firebase push notifications',
+      importance: Importance.high,
+      priority: Priority.high,
+      ticker: body,
+    );
+    final details = NotificationDetails(android: androidDetails);
+
+    await _plugin.show(
+      notificationId,
+      title,
+      body,
+      details,
+      payload: NotificationPayload.payloadFromMessage(message),
+    );
+
+    await DBHelper().insertNotificationHistory(
+      babyId: int.tryParse(message.data['babyId']?.toString() ?? ''),
+      title: title,
+      body: body,
+      scheduledDate: DateTime.now(),
+    );
   }
 
   Future<void> scheduleVaccineReminders(
@@ -52,9 +118,8 @@ class NotificationHelper {
 
     await _scheduleAndTrack(
       id: vaccine.id! * 10 + 1,
-      babyId: vaccine.babyId,
-      title: '$babyName ගේ එන්නත ළඟයි',
-      body: '${vaccine.vaccineName} - තව දවස් 3යි',
+      title: '$babyName vaccine reminder',
+      body: '${vaccine.vaccineName} is due in 3 days',
       scheduledDate: DateTime(
         dueDate.year,
         dueDate.month,
@@ -66,9 +131,8 @@ class NotificationHelper {
 
     await _scheduleAndTrack(
       id: vaccine.id! * 10 + 2,
-      babyId: vaccine.babyId,
-      title: '$babyName ගේ එන්නත හෙට',
-      body: '${vaccine.vaccineName} - බෑග් එක Ready කරගන්න',
+      title: '$babyName vaccine reminder',
+      body: '${vaccine.vaccineName} is due tomorrow',
       scheduledDate: DateTime(
         dueDate.year,
         dueDate.month,
@@ -80,35 +144,24 @@ class NotificationHelper {
 
     await _scheduleAndTrack(
       id: vaccine.id! * 10 + 3,
-      babyId: vaccine.babyId,
-      title: '$babyName ට අද එන්නත!',
-      body: '${vaccine.vaccineName} - අද Clinic යන්න මතක් කරන්න',
+      title: '$babyName vaccine reminder',
+      body: '${vaccine.vaccineName} is due today',
       scheduledDate: DateTime(dueDate.year, dueDate.month, dueDate.day, 8, 0),
     );
   }
 
   Future<void> _scheduleAndTrack({
     required int id,
-    required int babyId,
     required String title,
     required String body,
     required DateTime scheduledDate,
   }) async {
-    final scheduled = await _scheduleOne(
+    await _scheduleOne(
       id: id,
       title: title,
       body: body,
       scheduledDate: scheduledDate,
     );
-
-    if (scheduled) {
-      await DBHelper().insertNotificationHistory(
-        babyId: babyId,
-        title: title,
-        body: body,
-        scheduledDate: scheduledDate,
-      );
-    }
   }
 
   Future<bool> _scheduleOne({
@@ -141,6 +194,27 @@ class NotificationHelper {
     );
 
     return true;
+  }
+
+  static void _handleNotificationTap(NotificationResponse response) {
+    final navigator = _navigatorKey?.currentState;
+    if (navigator == null) return;
+
+    final payload = response.payload?.trim();
+    final normalizedPayload = payload?.toLowerCase();
+
+    if (normalizedPayload == 'history' ||
+        normalizedPayload == 'notifications' ||
+        normalizedPayload == 'notification_history') {
+      navigator.push(
+        MaterialPageRoute(builder: (_) => const NotificationHistoryScreen()),
+      );
+      return;
+    }
+
+    navigator.push(
+      MaterialPageRoute(builder: (_) => const NotificationHistoryScreen()),
+    );
   }
 
   Future<void> cancelVaccineReminders(int vaccineId) async {
