@@ -211,11 +211,17 @@ class NotificationHelper {
     return true;
   }
 
-  static void _handleNotificationTap(NotificationResponse response) {
+  static Future<void> _handleNotificationTap(
+    NotificationResponse response,
+  ) async {
+    final payload = response.payload?.trim();
+    if (payload != null && payload.startsWith(_kReminderPayloadPrefix)) {
+      await _saveReminderTapToHistory(payload);
+    }
+
     final navigator = _navigatorKey?.currentState;
     if (navigator == null) return;
 
-    final payload = response.payload?.trim();
     final normalizedPayload = payload?.toLowerCase();
 
     if (normalizedPayload == 'history' ||
@@ -229,6 +235,47 @@ class NotificationHelper {
 
     navigator.push(
       MaterialPageRoute(builder: (_) => const NotificationHistoryScreen()),
+    );
+  }
+
+  static String _reminderPayload({
+    required int id,
+    required int? babyId,
+    required String title,
+    required String body,
+    required DateTime scheduledDate,
+  }) {
+    final safeTitle = Uri.encodeComponent(title);
+    final safeBody = Uri.encodeComponent(body);
+    final date = Uri.encodeComponent(scheduledDate.toIso8601String());
+    final parsedBabyId = babyId?.toString() ?? '';
+    return '${_kReminderPayloadPrefix}id=$id&babyId=$parsedBabyId&title=$safeTitle&body=$safeBody&scheduledDate=$date';
+  }
+
+  static Future<void> _saveReminderTapToHistory(String payload) async {
+    final raw = payload.replaceFirst(_kReminderPayloadPrefix, '');
+    final params = Uri.splitQueryString(raw);
+
+    final title = Uri.decodeComponent(params['title'] ?? '').trim();
+    final body = Uri.decodeComponent(params['body'] ?? '').trim();
+    final dateRaw = Uri.decodeComponent(params['scheduledDate'] ?? '').trim();
+    final babyId = int.tryParse(params['babyId'] ?? '');
+    final scheduledDate = DateTime.tryParse(dateRaw);
+
+    if (title.isEmpty || body.isEmpty || scheduledDate == null) return;
+
+    final alreadyExists = await DBHelper().notificationHistoryExists(
+      title: title,
+      body: body,
+      scheduledDate: scheduledDate,
+    );
+    if (alreadyExists) return;
+
+    await DBHelper().insertNotificationHistory(
+      babyId: babyId,
+      title: title,
+      body: body,
+      scheduledDate: scheduledDate,
     );
   }
 
