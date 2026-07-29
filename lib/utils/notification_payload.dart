@@ -10,9 +10,7 @@ class NotificationPayload {
     }
 
     final dataTitle = message.data['title']?.toString().trim();
-    return dataTitle != null && dataTitle.isNotEmpty
-        ? dataTitle
-        : 'New update';
+    return dataTitle != null && dataTitle.isNotEmpty ? dataTitle : 'New update';
   }
 
   static String bodyFromMessage(RemoteMessage message) {
