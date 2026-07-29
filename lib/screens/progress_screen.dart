@@ -13,6 +13,7 @@ import '../widgets/section_card.dart';
 import '../widgets/stat_card.dart';
 import '../widgets/empty_baby_state.dart';
 import '../widgets/app_top_bar.dart';
+import 'home_screen.dart';
 import 'vaccine_details_screen.dart';
 
 class ProgressScreen extends StatefulWidget {
@@ -52,25 +53,38 @@ class _ProgressScreenState extends State<ProgressScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppTopBar(
-        title: l10n.vaccineProgress,
-        actions: [
-          AppBarActionButton(
-            tooltip: 'Options',
-            onPressed: () {},
-            icon: Icons.more_vert_rounded,
-          ),
-        ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _goHome();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppTopBar(
+          title: l10n.vaccineProgress,
+          onBack: _goHome,
+          actions: [
+            AppBarActionButton(
+              tooltip: 'Options',
+              onPressed: () {},
+              icon: Icons.more_vert_rounded,
+            ),
+          ],
+        ),
+        body: _loading
+            ? Center(child: CircularProgressIndicator(color: AppColors.primary))
+            : _baby == null
+            ? const EmptyBabyState()
+            : _buildContent(),
+        bottomNavigationBar: const AppBottomNav(currentIndex: 3),
       ),
-      body: _loading
-          ? Center(child: CircularProgressIndicator(color: AppColors.primary))
-          : _baby == null
-          ? const EmptyBabyState()
-          : _buildContent(),
-      bottomNavigationBar: const AppBottomNav(currentIndex: 3),
     );
+  }
+
+  void _goHome() {
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
   }
 
   Widget _buildContent() {
