@@ -18,6 +18,7 @@ import 'notification_history_screen.dart';
 import 'backup_restore_screen.dart';
 import 'help_support_screen.dart';
 import 'auth_gate.dart';
+import 'home_screen.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
@@ -50,89 +51,101 @@ class _MoreScreenState extends State<MoreScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppTopBar(title: l10n.more, showBack: false),
-      body: _loading
-          ? Center(child: CircularProgressIndicator(color: AppColors.primary))
-          : SafeArea(
-              child: ListView(
-                padding: const EdgeInsets.all(20),
-                children: [
-                  _profileHeader(l10n),
-                  const SizedBox(height: 18),
-                  _quickGrid(l10n),
-                  const SizedBox(height: 20),
-                  _sectionTitle('Records'),
-                  const SizedBox(height: 10),
-                  _menuGroup([
-                    _MoreAction(
-                      icon: Icons.notifications_none_rounded,
-                      label: l10n.notificationHistory,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const NotificationHistoryScreen(),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _goHome();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppTopBar(title: 'More Settings', onBack: _goHome),
+        body: _loading
+            ? Center(child: CircularProgressIndicator(color: AppColors.primary))
+            : SafeArea(
+                child: ListView(
+                  padding: const EdgeInsets.all(20),
+                  children: [
+                    _profileHeader(l10n),
+                    const SizedBox(height: 18),
+                    _quickGrid(l10n),
+                    const SizedBox(height: 20),
+                    _sectionTitle('Records'),
+                    const SizedBox(height: 10),
+                    _menuGroup([
+                      _MoreAction(
+                        icon: Icons.notifications_none_rounded,
+                        label: l10n.notificationHistory,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const NotificationHistoryScreen(),
+                          ),
                         ),
                       ),
-                    ),
-                    _MoreAction(
-                      icon: Icons.verified_rounded,
-                      label: l10n.vaccineCertificate,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const VaccineCertificateScreen(),
+                      _MoreAction(
+                        icon: Icons.verified_rounded,
+                        label: l10n.vaccineCertificate,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const VaccineCertificateScreen(),
+                          ),
                         ),
                       ),
-                    ),
-                    _MoreAction(
-                      icon: Icons.cloud_upload_rounded,
-                      label: l10n.backupRestore,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const BackupRestoreScreen(),
+                      _MoreAction(
+                        icon: Icons.cloud_upload_rounded,
+                        label: l10n.backupRestore,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const BackupRestoreScreen(),
+                          ),
                         ),
                       ),
-                    ),
-                  ]),
-                  const SizedBox(height: 20),
-                  _sectionTitle('App'),
-                  const SizedBox(height: 10),
-                  _menuGroup([
-                    _MoreAction(
-                      icon: Icons.settings_rounded,
-                      label: l10n.settings,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const SettingsScreen(),
+                    ]),
+                    const SizedBox(height: 20),
+                    _sectionTitle('App'),
+                    const SizedBox(height: 10),
+                    _menuGroup([
+                      _MoreAction(
+                        icon: Icons.settings_rounded,
+                        label: l10n.settings,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const SettingsScreen(),
+                          ),
                         ),
                       ),
-                    ),
-                    _MoreAction(
-                      icon: Icons.help_outline_rounded,
-                      label: l10n.helpSupport,
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const HelpSupportScreen(),
+                      _MoreAction(
+                        icon: Icons.help_outline_rounded,
+                        label: l10n.helpSupport,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const HelpSupportScreen(),
+                          ),
                         ),
                       ),
-                    ),
-                  ]),
-                  const SizedBox(height: 20),
-                  _sectionTitle('Account'),
-                  const SizedBox(height: 10),
-                  _menuGroup([
-                    _MoreAction(
-                      icon: Icons.logout_rounded,
-                      label: 'Sign Out',
-                      onTap: _signOut,
-                    ),
-                  ]),
-                  const SizedBox(height: 16),
-                ],
+                    ]),
+                    const SizedBox(height: 20),
+                    _sectionTitle('Account'),
+                    const SizedBox(height: 10),
+                    _menuGroup([
+                      _MoreAction(
+                        icon: Icons.logout_rounded,
+                        label: 'Sign Out',
+                        onTap: _signOut,
+                      ),
+                    ]),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
-            ),
-      bottomNavigationBar: const AppBottomNav(currentIndex: 4),
+        bottomNavigationBar: const AppBottomNav(currentIndex: 4),
+      ),
     );
+  }
+
+  void _goHome() {
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
   }
 
   Widget _profileHeader(AppLocalizations l10n) {
