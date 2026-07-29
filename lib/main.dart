@@ -6,11 +6,14 @@ import 'utils/app_language.dart';
 import 'utils/firebase_service.dart';
 import 'theme/app_theme.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await FirebaseService.initialize();
 
+  NotificationHelper().attachNavigatorKey(navigatorKey);
   await NotificationHelper().init();
 
   await AppLanguage.load();
@@ -32,6 +35,7 @@ class BabyBloomApp extends StatelessWidget {
           valueListenable: AppTheme.notifier,
           builder: (context, isDark, child) {
             return MaterialApp(
+              navigatorKey: navigatorKey,
               title: 'BabyBloom',
               debugShowCheckedModeBanner: false,
               locale: Locale(languageCode),
