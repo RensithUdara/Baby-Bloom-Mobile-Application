@@ -170,11 +170,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _sectionTitle('Account'),
                   const SizedBox(height: 10),
                   _settingsGroup([
-                    _valueTile(
-                      Icons.email_rounded,
-                      'Signed in as',
-                      email,
-                    ),
+                    _valueTile(Icons.email_rounded, 'Signed in as', email),
                     _linkTile(Icons.logout_rounded, 'Sign Out', _signOut),
                   ]),
                   const SizedBox(height: 20),
@@ -400,7 +396,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
-            children: [
+          children: [
             _rowIcon(icon),
             const SizedBox(width: 12),
             Expanded(child: Text(label, style: AppTextStyles.cardTitle)),
