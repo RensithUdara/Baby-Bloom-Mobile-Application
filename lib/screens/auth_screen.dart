@@ -299,14 +299,14 @@ class _AuthScreenState extends State<AuthScreen> {
           prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
           suffixIcon: suffixIcon,
           filled: true,
-          fillColor: const Color(0xFFF7F8FA),
+          fillColor: AppColors.elevatedSurface,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 16,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: Colors.black.withValues(alpha: 0.06)),
+            borderSide: BorderSide(color: AppColors.divider),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
