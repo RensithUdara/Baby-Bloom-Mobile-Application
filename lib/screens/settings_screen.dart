@@ -346,7 +346,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Expanded(child: Text(label, style: AppTextStyles.cardTitle)),
           Switch.adaptive(
             value: value,
-            activeColor: AppColors.primary,
+            activeThumbColor: AppColors.primary,
             onChanged: onChanged,
           ),
         ],
