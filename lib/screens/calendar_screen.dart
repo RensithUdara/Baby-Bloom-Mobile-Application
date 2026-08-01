@@ -585,7 +585,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 _loadData();
               }
             },
-            icon: const Icon(
+            icon: Icon(
               Icons.delete_outline_rounded,
               color: AppColors.textSecondary,
               size: 20,
