@@ -134,8 +134,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             : ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
-                  _settingsHero(l10n),
-                  const SizedBox(height: 20),
                   _sectionTitle(l10n.language),
                   const SizedBox(height: 10),
                   _settingsGroup([
@@ -220,55 +218,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
       ),
       bottomNavigationBar: const AppBottomNav(currentIndex: 4),
-    );
-  }
-
-  Widget _settingsHero(AppLocalizations l10n) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.divider),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 54,
-            height: 54,
-            decoration: BoxDecoration(
-              color: AppColors.softSurface,
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Icon(Icons.tune_rounded, color: AppColors.primary, size: 28),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.settings,
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(l10n.language, style: AppTextStyles.subtitle),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 
