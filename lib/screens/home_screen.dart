@@ -511,25 +511,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildNextVaccineCard(Vaccine vaccine) {
     final l10n = context.l10n;
+    final accent = const Color(0xFF7C5FD6);
+    final cardColor = AppTheme.isDark
+        ? const Color(0xFF2A2638)
+        : const Color(0xFFEFEBFB);
+    final iconBackground = AppTheme.isDark
+        ? const Color(0xFF3A3158)
+        : const Color(0xFFE0D6F7);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFEFEBFB),
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(
-              color: Color(0xFFE0D6F7),
+            decoration: BoxDecoration(
+              color: iconBackground,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.hourglass_bottom_rounded,
-              color: Color(0xFF7C5FD6),
-            ),
+            child: Icon(Icons.hourglass_bottom_rounded, color: accent),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -545,7 +549,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          const Icon(Icons.shield_rounded, color: Color(0xFF7C5FD6)),
+          Icon(Icons.shield_rounded, color: accent),
         ],
       ),
     );
@@ -561,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: AppColors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
