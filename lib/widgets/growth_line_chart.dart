@@ -81,7 +81,10 @@ class _LineChartPainter extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [lineColor.withOpacity(0.18), lineColor.withOpacity(0.0)],
+          colors: [
+            lineColor.withValues(alpha: 0.18),
+            lineColor.withValues(alpha: 0),
+          ],
         ).createShader(Rect.fromLTWH(0, topPadding, size.width, chartHeight));
       canvas.drawPath(fillPath, fillPaint);
 
