@@ -198,7 +198,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                 selected: isSelected,
                 onSelected: (_) => setState(() => _filter = status),
                 selectedColor: AppColors.primary,
-                backgroundColor: Colors.white,
+                backgroundColor: AppColors.cardBackground,
+                disabledColor: AppColors.elevatedSurface,
                 labelStyle: TextStyle(
                   color: isSelected ? Colors.white : AppColors.textSecondary,
                   fontWeight: FontWeight.w600,
