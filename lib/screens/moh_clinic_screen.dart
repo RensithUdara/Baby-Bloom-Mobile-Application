@@ -207,8 +207,10 @@ class _MohClinicScreenState extends State<MohClinicScreen> {
   }
 
   Widget _buildClinicImage(String? photoUrl) {
-    const placeholder = ColoredBox(
-      color: Color(0xFFE9E4F7),
+    final placeholder = ColoredBox(
+      color: AppTheme.isDark
+          ? const Color(0xFF2A2638)
+          : const Color(0xFFE9E4F7),
       child: Center(
         child: Icon(
           Icons.local_hospital_rounded,
@@ -228,8 +230,10 @@ class _MohClinicScreenState extends State<MohClinicScreen> {
         fit: BoxFit.cover,
         loadingBuilder: (context, child, progress) {
           if (progress == null) return child;
-          return const ColoredBox(
-            color: Color(0xFFE9E4F7),
+          return ColoredBox(
+            color: AppTheme.isDark
+                ? const Color(0xFF2A2638)
+                : const Color(0xFFE9E4F7),
             child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
           );
         },
