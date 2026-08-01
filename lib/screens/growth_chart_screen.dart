@@ -46,7 +46,7 @@ class _GrowthChartScreenState extends State<GrowthChartScreen> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.cardBackground,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -66,9 +66,10 @@ class _GrowthChartScreenState extends State<GrowthChartScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
+                      Text(
                         'Add Growth Entry',
                         style: TextStyle(
+                          color: AppColors.textPrimary,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                         ),
@@ -91,13 +92,20 @@ class _GrowthChartScreenState extends State<GrowthChartScreen> {
                           decoration: InputDecoration(
                             labelText: context.l10n.date,
                             filled: true,
-                            fillColor: const Color(0xFFF7F7F7),
+                            fillColor: AppColors.elevatedSurface,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
+                              borderSide: BorderSide(color: AppColors.divider),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: AppColors.divider),
                             ),
                           ),
-                          child: Text(context.formatNumericDate(pickedDate)),
+                          child: Text(
+                            context.formatNumericDate(pickedDate),
+                            style: TextStyle(color: AppColors.textPrimary),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -109,10 +117,18 @@ class _GrowthChartScreenState extends State<GrowthChartScreen> {
                         decoration: InputDecoration(
                           labelText: context.l10n.weightKg,
                           filled: true,
-                          fillColor: const Color(0xFFF7F7F7),
+                          fillColor: AppColors.elevatedSurface,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
+                            borderSide: BorderSide(color: AppColors.divider),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: AppColors.divider),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: AppColors.primary),
                           ),
                         ),
                         validator: (value) {
@@ -132,10 +148,18 @@ class _GrowthChartScreenState extends State<GrowthChartScreen> {
                         decoration: InputDecoration(
                           labelText: context.l10n.heightCm,
                           filled: true,
-                          fillColor: const Color(0xFFF7F7F7),
+                          fillColor: AppColors.elevatedSurface,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
+                            borderSide: BorderSide(color: AppColors.divider),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: AppColors.divider),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: AppColors.primary),
                           ),
                         ),
                         validator: (value) {
@@ -341,9 +365,9 @@ class _GrowthChartScreenState extends State<GrowthChartScreen> {
                 _loadRecords();
               }
             },
-            icon: const Icon(
+            icon: Icon(
               Icons.delete_outline_rounded,
-              color: Colors.grey,
+              color: AppColors.textSecondary,
               size: 20,
             ),
           ),
