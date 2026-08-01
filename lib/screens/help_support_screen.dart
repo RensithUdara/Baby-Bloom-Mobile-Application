@@ -32,64 +32,31 @@ class HelpSupportScreen extends StatelessWidget {
       appBar: AppTopBar(title: context.l10n.helpSupport),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
           children: [
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [AppColors.upcoming, AppColors.primary],
-                ),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 54,
-                    height: 54,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.18),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: const Icon(
-                      Icons.support_agent_rounded,
-                      color: Colors.white,
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Text(
-                      context.l10n.helpSupport,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _SupportHero(onEmail: () => _sendEmail(context)),
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.cardBackground,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.divider),
-              ),
-              child: Text(
-                context.l10n.helpBody,
-                style: AppTextStyles.cardTitle.copyWith(
-                  height: 1.5,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+            const _HelpCard(
+              icon: Icons.vaccines_rounded,
+              title: 'Vaccine Reminders',
+              body:
+                  'Add a baby profile, check the vaccine list, and keep notifications enabled. Custom vaccines can also be added from the Vaccines page.',
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
+            const _HelpCard(
+              icon: Icons.notifications_active_rounded,
+              title: 'Notifications',
+              body:
+                  'If reminders do not appear, check phone notification permission, battery restrictions, and the reminder switch in Settings.',
+            ),
+            const SizedBox(height: 12),
+            const _HelpCard(
+              icon: Icons.health_and_safety_rounded,
+              title: 'Health Questions',
+              body:
+                  'For missed vaccines, fever, side effects, or urgent care, contact your MOH clinic, midwife, doctor, or emergency services.',
+            ),
+            const SizedBox(height: 18),
             InkWell(
               onTap: () => _sendEmail(context),
               borderRadius: BorderRadius.circular(16),
@@ -97,28 +64,29 @@ class HelpSupportScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppColors.cardBackground,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.divider),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.shadow,
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
+                      width: 42,
+                      height: 42,
                       decoration: BoxDecoration(
                         color: AppColors.softSurface,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(14),
                       ),
                       child: Icon(
-                        Icons.email_outlined,
+                        Icons.email_rounded,
                         color: AppColors.primary,
-                        size: 20,
+                        size: 22,
                       ),
                     ),
                     const SizedBox(width: 14),
@@ -130,8 +98,13 @@ class HelpSupportScreen extends StatelessWidget {
                             context.l10n.emailSupport,
                             style: AppTextStyles.cardTitle,
                           ),
-                          const SizedBox(height: 2),
-                          Text(_supportEmail, style: AppTextStyles.subtitle),
+                          const SizedBox(height: 3),
+                          Text(
+                            _supportEmail,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.subtitle,
+                          ),
                         ],
                       ),
                     ),
@@ -145,6 +118,139 @@ class HelpSupportScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SupportHero extends StatelessWidget {
+  final VoidCallback onEmail;
+
+  const _SupportHero({required this.onEmail});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.upcoming, AppColors.primary],
+        ),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.18),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: const Icon(
+              Icons.support_agent_rounded,
+              color: Colors.white,
+              size: 30,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'How can we help?',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Get support for records, reminders, and app issues.',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.88),
+                    height: 1.35,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: onEmail,
+            icon: const Icon(Icons.mail_rounded),
+            color: Colors.white,
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.white.withValues(alpha: 0.16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HelpCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String body;
+
+  const _HelpCard({
+    required this.icon,
+    required this.title,
+    required this.body,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.softSurface,
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: Icon(icon, color: AppColors.primary, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: AppTextStyles.cardTitle),
+                const SizedBox(height: 6),
+                Text(
+                  body,
+                  style: AppTextStyles.subtitle.copyWith(height: 1.45),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
