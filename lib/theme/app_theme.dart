@@ -58,8 +58,9 @@ class AppColors {
       _dark ? const Color(0xFFB7BDC7) : const Color(0xFF707782);
   static Color get divider =>
       _dark ? const Color(0xFF343944) : const Color(0xFFE7E9EF);
-  static Color get shadow =>
-      _dark ? Colors.black.withOpacity(0.18) : Colors.black.withOpacity(0.05);
+  static Color get shadow => _dark
+      ? Colors.black.withValues(alpha: 0.18)
+      : Colors.black.withValues(alpha: 0.05);
 }
 
 class AppTextStyles {
