@@ -6,9 +6,9 @@ import '../data/notification_helper.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_language.dart';
-import '../widgets/bottom_nav_bar.dart';
-import '../widgets/app_top_bar.dart';
 import '../widgets/app_confirm_dialog.dart';
+import '../widgets/app_top_bar.dart';
+import '../widgets/bottom_nav_bar.dart';
 import 'about_app_screen.dart';
 import 'auth_gate.dart';
 import 'help_support_screen.dart';
@@ -132,88 +132,90 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: _loading
             ? Center(child: CircularProgressIndicator(color: AppColors.primary))
             : ListView(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.fromLTRB(14, 16, 14, 24),
                 children: [
-                  _sectionTitle(l10n.language),
-                  const SizedBox(height: 10),
-                  _settingsGroup([
-                    _languageOption(l10n.english, 'en', 'EN'),
-                    _languageOption(l10n.sinhala, 'si', 'සි'),
-                    _languageOption(l10n.tamil, 'ta', 'TA'),
-                  ]),
-                  const SizedBox(height: 20),
-                  _sectionTitle('Preferences'),
-                  const SizedBox(height: 10),
-                  _settingsGroup([
-                    _switchTile(
-                      Icons.dark_mode_rounded,
-                      l10n.darkMode,
-                      _darkMode,
-                      _setDarkMode,
-                    ),
-                    _switchTile(
-                      Icons.notifications_active_rounded,
-                      l10n.notifications,
-                      _notifications,
-                      _notificationsUpdating ? null : _setNotifications,
-                    ),
-                    _valueTile(
-                      Icons.access_time_rounded,
-                      l10n.reminderTime,
-                      _reminderTime,
-                      onTap: _notifications ? _pickReminderTime : null,
-                    ),
-                  ]),
-                  const SizedBox(height: 20),
-                  _sectionTitle('Account'),
-                  const SizedBox(height: 10),
-                  _settingsGroup([
-                    _valueTile(Icons.email_rounded, 'Signed in as', email),
-                    _linkTile(Icons.logout_rounded, 'Sign Out', _signOut),
-                  ]),
-                  const SizedBox(height: 20),
-                  _sectionTitle('Information'),
-                  const SizedBox(height: 10),
-                  _settingsGroup([
-                    _linkTile(
-                      Icons.info_outline_rounded,
-                      l10n.aboutApp,
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const AboutAppScreen(),
+                  _settingsSection(
+                    title: l10n.language,
+                    children: [
+                      _languageOption(l10n.english, 'en', 'EN'),
+                      _languageOption(l10n.sinhala, 'si', 'SI'),
+                      _languageOption(l10n.tamil, 'ta', 'TA'),
+                    ],
+                  ),
+                  _settingsSection(
+                    title: 'Preferences',
+                    children: [
+                      _switchTile(
+                        Icons.dark_mode_rounded,
+                        l10n.darkMode,
+                        _darkMode,
+                        _setDarkMode,
+                      ),
+                      _switchTile(
+                        Icons.notifications_active_rounded,
+                        l10n.notifications,
+                        _notifications,
+                        _notificationsUpdating ? null : _setNotifications,
+                      ),
+                      _valueTile(
+                        Icons.access_time_rounded,
+                        l10n.reminderTime,
+                        _reminderTime,
+                        onTap: _notifications ? _pickReminderTime : null,
+                      ),
+                    ],
+                  ),
+                  _settingsSection(
+                    title: 'Account',
+                    children: [
+                      _valueTile(Icons.email_rounded, 'Signed in as', email),
+                      _linkTile(Icons.logout_rounded, 'Sign Out', _signOut),
+                    ],
+                  ),
+                  _settingsSection(
+                    title: 'Information',
+                    children: [
+                      _linkTile(
+                        Icons.info_outline_rounded,
+                        l10n.aboutApp,
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AboutAppScreen(),
+                          ),
                         ),
                       ),
-                    ),
-                    _linkTile(
-                      Icons.privacy_tip_outlined,
-                      l10n.privacyPolicy,
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const PrivacyPolicyScreen(),
+                      _linkTile(
+                        Icons.privacy_tip_outlined,
+                        l10n.privacyPolicy,
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const PrivacyPolicyScreen(),
+                          ),
                         ),
                       ),
-                    ),
-                    _linkTile(
-                      Icons.support_agent_rounded,
-                      l10n.helpSupport,
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const HelpSupportScreen(),
+                      _linkTile(
+                        Icons.support_agent_rounded,
+                        l10n.helpSupport,
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const HelpSupportScreen(),
+                          ),
                         ),
                       ),
-                    ),
-                  ]),
-                  const SizedBox(height: 16),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
                   Center(
                     child: Text(
                       l10n.versionLabel,
-                      style: AppTextStyles.subtitle,
+                      style: AppTextStyles.subtitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 16),
                 ],
               ),
       ),
@@ -221,38 +223,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _sectionTitle(String title) {
-    return Text(
-      title,
-      style: TextStyle(
-        color: AppColors.textSecondary,
-        fontSize: 12,
-        fontWeight: FontWeight.w900,
-      ),
-    );
-  }
-
-  Widget _settingsGroup(List<Widget> children) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.divider),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+  Widget _settingsSection({
+    required String title,
+    required List<Widget> children,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 22),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (var i = 0; i < children.length; i++) ...[
-            children[i],
-            if (i != children.length - 1)
-              Divider(height: 1, indent: 58, color: AppColors.divider),
-          ],
+          Padding(
+            padding: const EdgeInsets.only(left: 1, bottom: 9),
+            child: Text(
+              title,
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.cardBackground,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.divider),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadow,
+                  blurRadius: 16,
+                  offset: const Offset(0, 7),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                for (var i = 0; i < children.length; i++) ...[
+                  children[i],
+                  if (i != children.length - 1)
+                    Divider(height: 1, indent: 54, color: AppColors.divider),
+                ],
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -264,15 +277,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
       onTap: () => AppLanguage.setLanguage(code),
       borderRadius: BorderRadius.circular(16),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
         child: Row(
           children: [
-            _rowIconText(badge, isSelected ? AppColors.primary : null),
+            _badgeIcon(
+              badge,
+              isSelected ? AppColors.primary : AppColors.textSecondary,
+              isSelected ? AppColors.softSurface : null,
+            ),
             const SizedBox(width: 12),
-            Expanded(child: Text(label, style: AppTextStyles.cardTitle)),
+            Expanded(child: Text(label, style: _rowTitleStyle())),
             Icon(
               isSelected ? Icons.check_circle_rounded : Icons.circle_outlined,
               color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              size: 23,
             ),
           ],
         ),
@@ -286,19 +304,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     bool value,
     ValueChanged<bool>? onChanged,
   ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Row(
-        children: [
-          _rowIcon(icon),
-          const SizedBox(width: 12),
-          Expanded(child: Text(label, style: AppTextStyles.cardTitle)),
-          Switch.adaptive(
-            value: value,
-            activeThumbColor: AppColors.primary,
-            onChanged: onChanged,
-          ),
-        ],
+    return InkWell(
+      onTap: onChanged == null ? null : () => onChanged(!value),
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
+        child: Row(
+          children: [
+            _rowIcon(icon, AppColors.primary),
+            const SizedBox(width: 12),
+            Expanded(child: Text(label, style: _rowTitleStyle())),
+            _SettingsSwitch(value: value, enabled: onChanged != null),
+          ],
+        ),
       ),
     );
   }
@@ -311,26 +329,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(16),
       child: Opacity(
-        opacity: onTap == null ? 0.5 : 1,
+        opacity: onTap == null ? 0.55 : 1,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
           child: Row(
             children: [
-              _rowIcon(icon),
+              _rowIcon(icon, AppColors.primary),
               const SizedBox(width: 12),
-              Expanded(child: Text(label, style: AppTextStyles.cardTitle)),
+              Expanded(child: Text(label, style: _rowTitleStyle())),
               Flexible(
                 child: Text(
                   value,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.right,
-                  style: AppTextStyles.subtitle,
+                  style: AppTextStyles.subtitle.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textSecondary,
+                size: 22,
+              ),
             ],
           ),
         ),
@@ -343,40 +368,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
         child: Row(
           children: [
-            _rowIcon(icon),
+            _rowIcon(icon, AppColors.primary),
             const SizedBox(width: 12),
-            Expanded(child: Text(label, style: AppTextStyles.cardTitle)),
-            Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
+            Expanded(child: Text(label, style: _rowTitleStyle())),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.textSecondary,
+              size: 22,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _rowIcon(IconData icon) {
-    return Container(
-      width: 34,
-      height: 34,
-      decoration: BoxDecoration(
-        color: AppColors.softSurface,
-        borderRadius: BorderRadius.circular(11),
-      ),
-      child: Icon(icon, color: AppColors.primary, size: 19),
+  TextStyle _rowTitleStyle() {
+    return TextStyle(
+      color: AppColors.textPrimary,
+      fontSize: 15,
+      fontWeight: FontWeight.w800,
     );
   }
 
-  Widget _rowIconText(String text, Color? color) {
-    final accent = color ?? AppColors.textSecondary;
+  Widget _rowIcon(IconData icon, Color color) {
     return Container(
-      width: 34,
-      height: 34,
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(icon, color: color, size: 18),
+    );
+  }
+
+  Widget _badgeIcon(String text, Color accent, Color? background) {
+    return Container(
+      width: 32,
+      height: 32,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(11),
+        color: background ?? AppColors.divider.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         text,
@@ -406,6 +442,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const AuthGate()),
       (_) => false,
+    );
+  }
+}
+
+class _SettingsSwitch extends StatelessWidget {
+  final bool value;
+  final bool enabled;
+
+  const _SettingsSwitch({required this.value, required this.enabled});
+
+  @override
+  Widget build(BuildContext context) {
+    final activeTrack = AppColors.primary.withValues(
+      alpha: enabled ? 0.62 : 0.3,
+    );
+    final inactiveTrack = AppTheme.isDark
+        ? const Color(0xFF4B3A3D)
+        : const Color(0xFFF1D9DD);
+    final inactiveBorder = AppTheme.isDark
+        ? const Color(0xFF7C6268)
+        : const Color(0xFF9A7D83);
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOut,
+      width: 48,
+      height: 30,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: value ? activeTrack : inactiveTrack,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: value ? Colors.transparent : inactiveBorder,
+          width: 1.5,
+        ),
+      ),
+      child: AnimatedAlign(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+            color: value
+                ? AppColors.primary
+                : (AppTheme.isDark
+                      ? const Color(0xFFBCA7AD)
+                      : const Color(0xFF8E747A)),
+            shape: BoxShape.circle,
+          ),
+        ),
+      ),
     );
   }
 }
