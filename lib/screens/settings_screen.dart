@@ -8,7 +8,10 @@ import '../theme/app_theme.dart';
 import '../utils/app_language.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/app_top_bar.dart';
+import '../widgets/app_confirm_dialog.dart';
 import 'about_app_screen.dart';
+import 'auth_gate.dart';
+import 'help_support_screen.dart';
 import 'privacy_policy_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -97,6 +100,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final picked = await showTimePicker(
       context: context,
       initialTime: _reminderTimeOfDay,
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+          dialogTheme: DialogThemeData(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+          ),
+        ),
+        child: child!,
+      ),
     );
     if (picked == null) return;
 
@@ -109,6 +123,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final email = FirebaseAuth.instance.currentUser?.email ?? 'Not signed in';
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -124,16 +139,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _sectionTitle(l10n.language),
                   const SizedBox(height: 10),
                   _settingsGroup([
-                    _languageOption(l10n.english, 'en'),
-                    _languageOption(l10n.sinhala, 'si'),
-                    _languageOption(l10n.tamil, 'ta'),
+                    _languageOption(l10n.english, 'en', 'EN'),
+                    _languageOption(l10n.sinhala, 'si', 'සි'),
+                    _languageOption(l10n.tamil, 'ta', 'TA'),
                   ]),
                   const SizedBox(height: 20),
                   _sectionTitle('Preferences'),
                   const SizedBox(height: 10),
                   _settingsGroup([
-                    _switchTile(l10n.darkMode, _darkMode, _setDarkMode),
                     _switchTile(
+                      Icons.dark_mode_rounded,
+                      l10n.darkMode,
+                      _darkMode,
+                      _setDarkMode,
+                    ),
+                    _switchTile(
+                      Icons.notifications_active_rounded,
                       l10n.notifications,
                       _notifications,
                       _notificationsUpdating ? null : _setNotifications,
@@ -152,11 +173,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _valueTile(
                       Icons.email_rounded,
                       'Signed in as',
-                      FirebaseAuth.instance.currentUser?.email ?? 'Account',
+                      email,
                     ),
-                    _linkTile(Icons.logout_rounded, 'Sign Out', () async {
-                      await FirebaseAuth.instance.signOut();
-                    }),
+                    _linkTile(Icons.logout_rounded, 'Sign Out', _signOut),
                   ]),
                   const SizedBox(height: 20),
                   _sectionTitle('Information'),
@@ -182,6 +201,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                     ),
+                    _linkTile(
+                      Icons.support_agent_rounded,
+                      l10n.helpSupport,
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const HelpSupportScreen(),
+                        ),
+                      ),
+                    ),
                   ]),
                   const SizedBox(height: 16),
                   Center(
@@ -203,7 +232,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.divider),
         boxShadow: [
           BoxShadow(
@@ -262,8 +291,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.divider),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -277,7 +313,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _languageOption(String label, String code) {
+  Widget _languageOption(String label, String code, String badge) {
     final isSelected = AppLanguage.current == code;
     return InkWell(
       onTap: () => AppLanguage.setLanguage(code),
@@ -286,6 +322,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
+            _rowIconText(badge, isSelected ? AppColors.primary : null),
+            const SizedBox(width: 12),
             Expanded(child: Text(label, style: AppTextStyles.cardTitle)),
             Icon(
               isSelected ? Icons.check_circle_rounded : Icons.circle_outlined,
@@ -297,14 +335,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _switchTile(String label, bool value, ValueChanged<bool>? onChanged) {
-    return Container(
-      child: SwitchListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-        title: Text(label, style: AppTextStyles.cardTitle),
-        value: value,
-        activeColor: AppColors.primary,
-        onChanged: onChanged,
+  Widget _switchTile(
+    IconData icon,
+    String label,
+    bool value,
+    ValueChanged<bool>? onChanged,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        children: [
+          _rowIcon(icon),
+          const SizedBox(width: 12),
+          Expanded(child: Text(label, style: AppTextStyles.cardTitle)),
+          Switch.adaptive(
+            value: value,
+            activeColor: AppColors.primary,
+            onChanged: onChanged,
+          ),
+        ],
       ),
     );
   }
@@ -324,10 +373,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
-              Icon(icon, color: AppColors.primary, size: 20),
+              _rowIcon(icon),
               const SizedBox(width: 12),
               Expanded(child: Text(label, style: AppTextStyles.cardTitle)),
-              Text(value, style: AppTextStyles.subtitle),
+              Flexible(
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.right,
+                  style: AppTextStyles.subtitle,
+                ),
+              ),
               Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
             ],
           ),
@@ -343,14 +400,67 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
-          children: [
-            Icon(icon, color: AppColors.primary, size: 20),
+            children: [
+            _rowIcon(icon),
             const SizedBox(width: 12),
             Expanded(child: Text(label, style: AppTextStyles.cardTitle)),
             Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _rowIcon(IconData icon) {
+    return Container(
+      width: 34,
+      height: 34,
+      decoration: BoxDecoration(
+        color: AppColors.softSurface,
+        borderRadius: BorderRadius.circular(11),
+      ),
+      child: Icon(icon, color: AppColors.primary, size: 19),
+    );
+  }
+
+  Widget _rowIconText(String text, Color? color) {
+    final accent = color ?? AppColors.textSecondary;
+    return Container(
+      width: 34,
+      height: 34,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(11),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: accent,
+          fontWeight: FontWeight.w900,
+          fontSize: 12,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _signOut() async {
+    final confirmed = await showAppConfirmDialog(
+      context: context,
+      title: 'Sign Out',
+      message: 'Are you sure you want to sign out?',
+      cancelLabel: context.l10n.cancel,
+      confirmLabel: 'Sign Out',
+      icon: Icons.logout_rounded,
+      confirmColor: AppColors.primaryDark,
+    );
+    if (confirmed != true) return;
+
+    await FirebaseAuth.instance.signOut();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const AuthGate()),
+      (_) => false,
     );
   }
 }
