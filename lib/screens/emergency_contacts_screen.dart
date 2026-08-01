@@ -6,6 +6,7 @@ import '../database/db_helper.dart';
 import '../models/emergency_contact.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_top_bar.dart';
+import '../widgets/app_confirm_dialog.dart';
 
 class EmergencyContactsScreen extends StatefulWidget {
   const EmergencyContactsScreen({super.key});
@@ -45,25 +46,14 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
   }
 
   Future<void> _deleteContact(EmergencyContact contact) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(context.l10n.removeContactQuestion),
-        content: Text(context.l10n.removeContactMessage(contact.name)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(context.l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              context.l10n.remove,
-              style: const TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
+      title: context.l10n.removeContactQuestion,
+      message: context.l10n.removeContactMessage(contact.name),
+      cancelLabel: context.l10n.cancel,
+      confirmLabel: context.l10n.remove,
+      icon: Icons.delete_outline_rounded,
+      confirmColor: AppColors.overdue,
     );
     if (confirmed != true || contact.id == null) return;
 
