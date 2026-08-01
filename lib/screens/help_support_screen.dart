@@ -8,7 +8,7 @@ import '../widgets/app_top_bar.dart';
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
 
-  static const _supportEmail = 'nimeshamadushani416@gmail.com';
+  static const _supportEmail = 'rensithudaragonalagoda@gmail.com';
 
   Future<void> _sendEmail(BuildContext context) async {
     final uri = Uri(
