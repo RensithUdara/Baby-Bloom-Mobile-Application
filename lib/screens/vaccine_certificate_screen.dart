@@ -102,7 +102,7 @@ class _VaccineCertificateScreenState extends State<VaccineCertificateScreen> {
             Text(
               context.l10n.addBabyForCertificate,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13, color: Colors.grey),
+              style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -289,7 +289,10 @@ class _VaccineCertificateScreenState extends State<VaccineCertificateScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
                     context.l10n.noVaccinesCompletedYet,
-                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 )
               else
