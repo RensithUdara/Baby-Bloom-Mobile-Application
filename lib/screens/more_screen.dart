@@ -6,6 +6,7 @@ import '../database/db_helper.dart';
 import '../l10n/l10n.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/app_top_bar.dart';
+import '../widgets/app_confirm_dialog.dart';
 import 'baby_profile_screen.dart';
 import 'mother_profile_screen.dart';
 import 'moh_clinic_screen.dart';
@@ -15,7 +16,6 @@ import 'vaccine_certificate_screen.dart';
 import 'settings_screen.dart';
 import 'add_baby_screen.dart';
 import 'notification_history_screen.dart';
-import 'backup_restore_screen.dart';
 import 'help_support_screen.dart';
 import 'auth_gate.dart';
 import 'home_screen.dart';
@@ -87,15 +87,6 @@ class _MoreScreenState extends State<MoreScreen> {
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const VaccineCertificateScreen(),
-                          ),
-                        ),
-                      ),
-                      _MoreAction(
-                        icon: Icons.cloud_upload_rounded,
-                        label: l10n.backupRestore,
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const BackupRestoreScreen(),
                           ),
                         ),
                       ),
@@ -400,25 +391,17 @@ class _MoreScreenState extends State<MoreScreen> {
   }
 
   Future<void> _signOut() async {
-    final shouldSignOut = await showDialog<bool>(
+    final confirmed = await showAppConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Sign Out'),
-          ),
-        ],
-      ),
+      title: 'Sign Out',
+      message: 'Are you sure you want to sign out?',
+      cancelLabel: 'Cancel',
+      confirmLabel: 'Sign Out',
+      icon: Icons.logout_rounded,
+      confirmColor: AppColors.primaryDark,
     );
 
-    if (shouldSignOut != true) return;
+    if (confirmed != true) return;
 
     await FirebaseAuth.instance.signOut();
     if (!mounted) return;
