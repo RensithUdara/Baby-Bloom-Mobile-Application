@@ -144,7 +144,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.cardBackground,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -164,9 +164,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
+                      Text(
                         'Add Reminder',
                         style: TextStyle(
+                          color: AppColors.textPrimary,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                         ),
@@ -178,10 +179,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           labelText: context.l10n.reminderTitle,
                           hintText: context.l10n.reminderHint,
                           filled: true,
-                          fillColor: const Color(0xFFF7F7F7),
+                          fillColor: AppColors.elevatedSurface,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
+                            borderSide: BorderSide(color: AppColors.divider),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: AppColors.divider),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: AppColors.primary),
                           ),
                         ),
                         validator: (value) {
@@ -208,13 +217,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           decoration: InputDecoration(
                             labelText: context.l10n.date,
                             filled: true,
-                            fillColor: const Color(0xFFF7F7F7),
+                            fillColor: AppColors.elevatedSurface,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
+                              borderSide: BorderSide(color: AppColors.divider),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: AppColors.divider),
                             ),
                           ),
-                          child: Text(context.formatNumericDate(pickedDate)),
+                          child: Text(
+                            context.formatNumericDate(pickedDate),
+                            style: TextStyle(color: AppColors.textPrimary),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -445,7 +461,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: AppColors.shadow,
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -518,7 +534,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: AppColors.shadow,
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -530,7 +546,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             width: 46,
             padding: const EdgeInsets.symmetric(vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.12),
+              color: AppColors.primary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(
@@ -571,7 +587,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             },
             icon: const Icon(
               Icons.delete_outline_rounded,
-              color: Colors.grey,
+              color: AppColors.textSecondary,
               size: 20,
             ),
           ),
