@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
+import '../theme/app_theme.dart';
 import 'auth_gate.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -61,14 +62,22 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppTheme.isDark;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xffFCE4EC), Color(0xffF8BBD0), Colors.white],
+            colors: isDark
+                ? const [
+                    Color(0xFF1B171D),
+                    Color(0xFF251B25),
+                    Color(0xFF17191D),
+                  ]
+                : const [Color(0xffFCE4EC), Color(0xffF8BBD0), Colors.white],
           ),
         ),
         child: SafeArea(
@@ -85,10 +94,10 @@ class _SplashScreenState extends State<SplashScreen>
                     height: 230,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white,
+                      color: isDark ? AppColors.cardBackground : Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.pink.withOpacity(0.25),
+                          color: Colors.pink.withValues(alpha: 0.25),
                           blurRadius: 25,
                           spreadRadius: 5,
                           offset: const Offset(0, 10),
@@ -111,10 +120,10 @@ class _SplashScreenState extends State<SplashScreen>
                 opacity: _fadeAnimation,
                 child: Text(
                   context.l10n.appName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 34,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xffC2185B),
+                    color: isDark ? AppColors.primary : const Color(0xffC2185B),
                     letterSpacing: 1,
                   ),
                 ),
@@ -127,9 +136,9 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Text(
                   context.l10n.careTagline,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
-                    color: Colors.black54,
+                    color: isDark ? AppColors.textSecondary : Colors.black54,
                     height: 1.5,
                   ),
                 ),
@@ -150,7 +159,7 @@ class _SplashScreenState extends State<SplashScreen>
 
               Text(
                 context.l10n.versionShort,
-                style: const TextStyle(color: Colors.grey, fontSize: 13),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
               ),
 
               const SizedBox(height: 30),
