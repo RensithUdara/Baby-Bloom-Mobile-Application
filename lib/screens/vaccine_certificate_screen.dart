@@ -80,7 +80,19 @@ class _VaccineCertificateScreenState extends State<VaccineCertificateScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.child_care_rounded, size: 48, color: Colors.grey),
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: AppColors.softSurface,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Icon(
+                Icons.child_care_rounded,
+                size: 38,
+                color: AppColors.primary,
+              ),
+            ),
             const SizedBox(height: 12),
             Text(
               context.l10n.noBabyProfileFound,
@@ -101,7 +113,7 @@ class _VaccineCertificateScreenState extends State<VaccineCertificateScreen> {
   Widget _buildPhoto(String? photoPath) {
     if (photoPath == null || photoPath.trim().isEmpty) {
       return CircleAvatar(
-        radius: 36,
+        radius: 38,
         backgroundColor: AppColors.softSurface,
         child: Icon(
           Icons.child_care_rounded,
@@ -111,7 +123,7 @@ class _VaccineCertificateScreenState extends State<VaccineCertificateScreen> {
       );
     }
     return CircleAvatar(
-      radius: 36,
+      radius: 38,
       backgroundColor: AppColors.softSurface,
       backgroundImage: FileImage(File(photoPath)),
     );
@@ -119,26 +131,94 @@ class _VaccineCertificateScreenState extends State<VaccineCertificateScreen> {
 
   Widget _buildCertificate(Baby baby) {
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       children: [
+        Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.primary, const Color(0xFFFF8A65)],
+            ),
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.20),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.20),
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: const Icon(
+                  Icons.verified_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Child Immunization Certificate',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${completedVaccines.length} completed • $pendingCount pending',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.86),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: AppColors.cardBackground,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.divider, width: 1.5),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.divider),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadow,
+                blurRadius: 14,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Column(
             children: [
-              Icon(Icons.verified_rounded, color: AppColors.primary, size: 32),
-              const SizedBox(height: 6),
-              Text(
-                'Child Immunization Certificate',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.workspace_premium_rounded,
+                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(height: 18),
@@ -171,7 +251,7 @@ class _VaccineCertificateScreenState extends State<VaccineCertificateScreen> {
                       context.l10n.bloodGroupValue(baby.bloodGroup!),
                     if (baby.hospital != null)
                       context.l10n.bornAt(baby.hospital!),
-                  ].join(' ? '),
+                  ].join(' • '),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 12,
@@ -179,8 +259,30 @@ class _VaccineCertificateScreenState extends State<VaccineCertificateScreen> {
                   ),
                 ),
               ],
-              const SizedBox(height: 16),
-              const Divider(height: 1),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: _statPill(
+                      Icons.check_circle_rounded,
+                      '${completedVaccines.length}',
+                      'Completed',
+                      AppColors.completed,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _statPill(
+                      Icons.schedule_rounded,
+                      '$pendingCount',
+                      'Pending',
+                      AppColors.pending,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              Divider(height: 1, color: AppColors.divider),
               const SizedBox(height: 16),
               if (completedVaccines.isEmpty)
                 Padding(
@@ -193,92 +295,117 @@ class _VaccineCertificateScreenState extends State<VaccineCertificateScreen> {
               else
                 Column(
                   children: completedVaccines
-                      .map(
-                        (v) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(top: 2),
-                                child: Icon(
-                                  Icons.check_circle_rounded,
-                                  size: 18,
-                                  color: Colors.green,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      context.l10n.vaccineDose(
-                                        v.vaccineName,
-                                        v.doseNumber,
-                                      ),
-                                      style: TextStyle(
-                                        fontSize: 13.5,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary,
-                                      ),
-                                    ),
-                                    Text(
-                                      context.l10n.givenOn(
-                                        _formatDate(
-                                          v.completedDate ?? v.dueDate,
-                                        ),
-                                      ),
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: AppColors.textSecondary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
+                      .map((v) => _completedRow(v))
                       .toList(),
                 ),
-              const SizedBox(height: 4),
-              const Divider(height: 1),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    context.l10n.vaccinesCompletedCount(
-                      completedVaccines.length,
-                    ),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  if (pendingCount > 0)
-                    Text(
-                      '$pendingCount pending',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.orange,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                ],
-              ),
             ],
           ),
         ),
         const SizedBox(height: 16),
-        Text(
-          'This certificate is generated from records entered in this app. Please carry your official MOH child health record book for clinic visits.',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.softSurface,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Text(
+            context.l10n.certificateDisclaimer,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              height: 1.45,
+              color: AppColors.textSecondary,
+            ),
+          ),
         ),
       ],
+    );
+  }
+
+  Widget _statPill(IconData icon, String value, String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 20),
+          const SizedBox(width: 8),
+          Text(
+            value,
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w900,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(width: 5),
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _completedRow(Vaccine vaccine) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.completed.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.check_circle_rounded,
+            size: 20,
+            color: AppColors.completed,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.l10n.vaccineDose(
+                    vaccine.vaccineName,
+                    vaccine.doseNumber,
+                  ),
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  context.l10n.givenOn(
+                    _formatDate(vaccine.completedDate ?? vaccine.dueDate),
+                  ),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
