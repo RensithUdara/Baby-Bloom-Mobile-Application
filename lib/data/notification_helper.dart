@@ -18,6 +18,7 @@ class NotificationHelper {
   static const _kNotificationsEnabled = 'settings_notifications';
   static const _kReminderPayloadPrefix = 'local_reminder|';
   static GlobalKey<NavigatorState>? _navigatorKey;
+  static bool _initialized = false;
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
@@ -27,16 +28,23 @@ class NotificationHelper {
   }
 
   Future<void> init() async {
+    if (_initialized) return;
+
     tzdata.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Asia/Colombo'));
 
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
-    const iosSettings = DarwinInitializationSettings();
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
     const initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
+      macOS: iosSettings,
     );
 
     await _plugin.initialize(
@@ -56,6 +64,16 @@ class NotificationHelper {
       await androidPlugin.requestExactAlarmsPermission();
       await androidPlugin.createNotificationChannel(
         const AndroidNotificationChannel(
+          'vaccine_reminders',
+          'Vaccine Reminders',
+          description: 'BabyBloom vaccine due date alerts',
+          importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
+        ),
+      );
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
           'firebase_push_notifications',
           'Firebase Push Notifications',
           description: 'Incoming Firebase push notifications',
@@ -65,6 +83,24 @@ class NotificationHelper {
         ),
       );
     }
+
+    final iosPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >();
+    await iosPlugin?.requestPermissions(alert: true, badge: true, sound: true);
+
+    final macosPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          MacOSFlutterLocalNotificationsPlugin
+        >();
+    await macosPlugin?.requestPermissions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    _initialized = true;
   }
 
   Future<bool> isEnabled() async {
@@ -73,6 +109,7 @@ class NotificationHelper {
   }
 
   Future<void> showFirebaseNotification(RemoteMessage message) async {
+    await init();
     if (!await isEnabled()) return;
 
     final title = NotificationPayload.titleFromMessage(message);
@@ -92,7 +129,16 @@ class NotificationHelper {
       priority: Priority.high,
       ticker: body,
     );
-    final details = NotificationDetails(android: androidDetails);
+    const darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+    final details = NotificationDetails(
+      android: androidDetails,
+      iOS: darwinDetails,
+      macOS: darwinDetails,
+    );
 
     await _plugin.show(
       notificationId,
@@ -114,7 +160,9 @@ class NotificationHelper {
     Vaccine vaccine,
     String babyName,
   ) async {
+    await init();
     if (!await isEnabled()) return;
+    if (vaccine.id == null || vaccine.status == 'completed') return;
 
     final dueDate = vaccine.dueDate;
 
@@ -187,26 +235,52 @@ class NotificationHelper {
       importance: Importance.high,
       priority: Priority.high,
     );
-    const details = NotificationDetails(android: androidDetails);
-    final tzScheduledDate = tz.TZDateTime.from(scheduledDate, tz.local);
-
-    await _plugin.zonedSchedule(
-      id,
-      title,
-      body,
-      tzScheduledDate,
-      details,
-      payload: _reminderPayload(
-        id: id,
-        babyId: babyId,
-        title: title,
-        body: body,
-        scheduledDate: scheduledDate,
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+    const darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
     );
+    const details = NotificationDetails(
+      android: androidDetails,
+      iOS: darwinDetails,
+      macOS: darwinDetails,
+    );
+    final tzScheduledDate = tz.TZDateTime.from(scheduledDate, tz.local);
+    final scheduleMode = await _androidScheduleMode();
+
+    final payload = _reminderPayload(
+      id: id,
+      babyId: babyId,
+      title: title,
+      body: body,
+      scheduledDate: scheduledDate,
+    );
+
+    try {
+      await _plugin.zonedSchedule(
+        id,
+        title,
+        body,
+        tzScheduledDate,
+        details,
+        payload: payload,
+        androidScheduleMode: scheduleMode,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    } on Exception {
+      await _plugin.zonedSchedule(
+        id,
+        title,
+        body,
+        tzScheduledDate,
+        details,
+        payload: payload,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    }
 
     return true;
   }
@@ -280,6 +354,7 @@ class NotificationHelper {
   }
 
   Future<void> cancelVaccineReminders(int vaccineId) async {
+    await init();
     await _plugin.cancel(vaccineId * 10 + 1);
     await _plugin.cancel(vaccineId * 10 + 2);
     await _plugin.cancel(vaccineId * 10 + 3);
@@ -294,11 +369,26 @@ class NotificationHelper {
   }
 
   Future<void> rescheduleAllReminders() async {
+    await init();
     final pending = await DBHelper().getAllPendingVaccinesWithBabyNames();
     for (final item in pending) {
       final vaccine = Vaccine.fromMap(item);
       final babyName = item['babyName'] as String;
       await scheduleVaccineReminders(vaccine, babyName);
     }
+  }
+
+  Future<AndroidScheduleMode> _androidScheduleMode() async {
+    final androidPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (androidPlugin == null) return AndroidScheduleMode.exactAllowWhileIdle;
+
+    final canScheduleExact =
+        await androidPlugin.canScheduleExactNotifications() ?? true;
+    return canScheduleExact
+        ? AndroidScheduleMode.exactAllowWhileIdle
+        : AndroidScheduleMode.inexactAllowWhileIdle;
   }
 }

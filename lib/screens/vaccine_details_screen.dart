@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
+import '../database/db_helper.dart';
 import '../models/vaccine.dart';
 import '../theme/app_theme.dart';
 import '../utils/vaccine_extensions.dart';
@@ -28,10 +29,14 @@ class _VaccineDetailsScreenState extends State<VaccineDetailsScreen> {
     );
   }
 
-  void _markAsDone() {
-    setState(() {
-      _vaccine.markCompleted();
-    });
+  Future<void> _markAsDone() async {
+    await DBHelper().updateVaccineStatus(
+      _vaccine.id!,
+      'completed',
+      DateTime.now(),
+    );
+    if (!mounted) return;
+    setState(() => _vaccine.markCompleted());
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(context.l10n.markedAsDone(_vaccine.vaccineName)),

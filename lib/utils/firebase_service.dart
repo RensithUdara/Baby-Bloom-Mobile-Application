@@ -82,6 +82,12 @@ class FirebaseService {
       });
 
       await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
+            alert: false,
+            badge: true,
+            sound: true,
+          );
       final settings = await FirebaseMessaging.instance.requestPermission(
         alert: true,
         announcement: false,

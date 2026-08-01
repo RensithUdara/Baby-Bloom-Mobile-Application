@@ -395,6 +395,18 @@ class DBHelper {
 
   Future<int> deleteBaby(int babyId) async {
     final db = await database;
+    final vaccines = await db.query(
+      'vaccines',
+      columns: ['id'],
+      where: 'babyId = ?',
+      whereArgs: [babyId],
+    );
+    for (final vaccine in vaccines) {
+      final vaccineId = vaccine['id'] as int?;
+      if (vaccineId != null) {
+        await NotificationHelper().cancelVaccineReminders(vaccineId);
+      }
+    }
     await db.delete('vaccines', where: 'babyId = ?', whereArgs: [babyId]);
     final result = await db.delete(
       'babies',
@@ -420,6 +432,13 @@ class DBHelper {
     final id = await db.insert('vaccines', vaccine.toMap());
     vaccine.id = id;
     await FirebaseContentRepository.saveVaccine(vaccine);
+    if (vaccine.status == 'pending') {
+      final baby = await getBaby(vaccine.babyId);
+      await NotificationHelper().scheduleVaccineReminders(
+        vaccine,
+        baby?.name ?? 'Baby',
+      );
+    }
     return id;
   }
 
@@ -462,6 +481,21 @@ class DBHelper {
 
     if (status == 'completed') {
       await NotificationHelper().cancelVaccineReminders(vaccineId);
+    } else if (status == 'pending') {
+      final updated = await db.query(
+        'vaccines',
+        where: 'id = ?',
+        whereArgs: [vaccineId],
+        limit: 1,
+      );
+      if (updated.isNotEmpty) {
+        final vaccine = Vaccine.fromMap(updated.first);
+        final baby = await getBaby(vaccine.babyId);
+        await NotificationHelper().scheduleVaccineReminders(
+          vaccine,
+          baby?.name ?? 'Baby',
+        );
+      }
     }
 
     await FirebaseContentRepository.updateVaccineStatus(
