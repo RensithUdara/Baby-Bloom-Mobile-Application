@@ -71,7 +71,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.cardBackground,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -91,9 +91,10 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
+                      Text(
                         'Add Emergency Contact',
                         style: TextStyle(
+                          color: AppColors.textPrimary,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                         ),
@@ -185,10 +186,18 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
         decoration: InputDecoration(
           labelText: label,
           filled: true,
-          fillColor: const Color(0xFFF7F7F7),
+          fillColor: AppColors.elevatedSurface,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
+            borderSide: BorderSide(color: AppColors.divider),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColors.divider),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColors.primary),
           ),
         ),
       ),
@@ -211,12 +220,12 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
                 children: [
-                  const Text(
+                  Text(
                     'National Emergency Numbers',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: Colors.grey,
+                      color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -232,12 +241,12 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'My Emergency Contacts',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: Colors.grey,
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -250,7 +259,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                         context.l10n.noPersonalContacts,
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.grey.shade600,
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     )
@@ -259,7 +268,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
                       (c) => _buildTile(
                         icon: Icons.contact_phone_rounded,
                         title: c.name,
-                        subtitle: c.relation != null ? ' ? ' : c.phone,
+                        subtitle: c.relation ?? c.phone,
                         onCall: () => _call(c.phone),
                         onDelete: () => _deleteContact(c),
                       ),
@@ -303,7 +312,8 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
                     fontSize: 14.5,
                     fontWeight: FontWeight.w700,
                   ),
@@ -316,9 +326,9 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
           if (onDelete != null)
             IconButton(
               onPressed: onDelete,
-              icon: const Icon(
+              icon: Icon(
                 Icons.delete_outline_rounded,
-                color: Colors.grey,
+                color: AppColors.textSecondary,
                 size: 20,
               ),
             ),
