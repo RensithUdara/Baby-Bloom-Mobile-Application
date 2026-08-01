@@ -9,6 +9,7 @@ import '../widgets/vaccine_tile.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/empty_baby_state.dart';
 import '../widgets/app_top_bar.dart';
+import 'add_vaccine_screen.dart';
 import 'vaccine_details_screen.dart';
 import 'home_screen.dart';
 
@@ -88,9 +89,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
           onBack: _goHome,
           actions: [
             AppBarActionButton(
-              tooltip: 'Search',
-              onPressed: () {},
-              icon: Icons.search_rounded,
+              tooltip: 'Add vaccine',
+              onPressed: _baby == null ? null : _addVaccine,
+              icon: Icons.add_rounded,
             ),
           ],
         ),
@@ -99,6 +100,14 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             : _baby == null
             ? const EmptyBabyState()
             : _buildContent(),
+        floatingActionButton: _baby == null || _loading
+            ? null
+            : FloatingActionButton(
+                onPressed: _addVaccine,
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                child: const Icon(Icons.add_rounded),
+              ),
         bottomNavigationBar: const AppBottomNav(currentIndex: 1),
       ),
     );
@@ -108,6 +117,22 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     Navigator.of(
       context,
     ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
+  }
+
+  Future<void> _addVaccine() async {
+    final baby = _baby;
+    if (baby == null || baby.id == null) return;
+
+    final added = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => AddVaccineScreen(baby: baby)),
+    );
+    if (added == true) {
+      await _loadData();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vaccine added with reminders')),
+      );
+    }
   }
 
   Widget _buildContent() {
