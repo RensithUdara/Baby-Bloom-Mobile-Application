@@ -263,6 +263,14 @@ class FirebaseContentRepository {
     for (final doc in vaccines.docs) {
       await doc.reference.delete();
     }
+
+    final growthRecords = await userDoc
+        .collection('growth_records')
+        .where('babyId', isEqualTo: babyId)
+        .get();
+    for (final doc in growthRecords.docs) {
+      await doc.reference.delete();
+    }
   }
 
   static Future<void> saveMother(Mother mother) async {
@@ -284,6 +292,12 @@ class FirebaseContentRepository {
         .collection('vaccines')
         .doc('${vaccine.id}')
         .set(vaccine.toMap());
+  }
+
+  static Future<void> deleteVaccine(int vaccineId) async {
+    final userDoc = _userDoc;
+    if (userDoc == null) return;
+    await userDoc.collection('vaccines').doc('$vaccineId').delete();
   }
 
   static Future<void> updateVaccineStatus({
