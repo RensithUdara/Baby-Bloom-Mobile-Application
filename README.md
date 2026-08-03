@@ -1,53 +1,124 @@
 # 🌸 BabyBloom
 
-BabyBloom is a modern Flutter app designed to support parents and caregivers in managing a baby’s daily needs with ease. It combines health, vaccination, reminder, and family-support features in one simple and friendly experience.
+BabyBloom is a modern Flutter app for mothers, parents, and caregivers to manage baby health records, vaccine reminders, growth tracking, MOH clinic details, and daily care support in one calm, friendly place.
 
-## ✨ What BabyBloom offers
+## ✨ What BabyBloom Offers
 
-- 👶 Baby profile management
-- 💉 Vaccine tracking and status updates
-- 📅 Calendar view with reminders
-- 🔔 Local notifications for important tasks
-- 📈 Growth tracking support
-- 🏥 MOH clinic and health guidance access
-- 🚨 Emergency contacts for quick support
-- ☁️ Backup and restore support
+- 👶 Baby profile management with birth details
+- 💉 Vaccine schedule tracking
+- ➕ Custom vaccine adding for extra or clinic-specific vaccines
+- ✅ Mark vaccines as completed
+- 🔔 Local vaccine reminders and Firebase push notification support
+- 🕘 Reminder time and notification settings
+- 📅 Calendar view for vaccines and personal reminders
+- 📈 Growth chart records for weight, height, and BMI
+- 🏥 MOH clinic details and health guidance
+- 🚨 National emergency numbers and personal emergency contacts
+- 📜 Child immunization certificate
+- 🗂️ Notification history
 - 🌙 Light and dark mode
 - 🌍 Multi-language support
+- 🔐 Firebase authentication
+- 🎨 Redesigned settings, popups, support, privacy, and about pages
 
-## 🧩 App highlights
+## 🧩 Main Features
 
-BabyBloom helps parents stay organized through:
+### 👶 Baby Profiles
 
-- vaccination schedules
-- appointment reminders
-- baby growth records
-- emergency contact access
-- health information and support resources
+Add and manage baby details including name, date of birth, gender, blood group, birth weight, hospital, and profile information.
 
-The app is built to feel calm, modern, and useful for everyday parenting.
+### 💉 Vaccine Tracking
 
-## 🛠️ Tech stack
+BabyBloom creates vaccine records based on the baby's profile and lets mothers track each vaccine as pending, overdue, upcoming, or completed.
+
+### ➕ Add Custom Vaccines
+
+Some mothers may need to add vaccines that are not already in the default list. The app now supports adding a custom vaccine with:
+
+- Vaccine name
+- Dose number
+- Due date
+- Automatic pending status
+- Reminder scheduling support
+
+### 🔔 Notifications & Reminders
+
+The app supports vaccine reminders and push notifications:
+
+- 3 days before due date
+- 1 day before due date
+- On the due date
+- Firebase foreground and background push handling
+- Notification history screen
+- Notification enable/disable setting
+- Android exact alarm fallback support
+
+### 📅 Calendar & Personal Reminders
+
+The calendar shows vaccine events and user-created reminders. Mothers can add personal reminders such as clinic visits, doctor appointments, or follow-up checks.
+
+### 📈 Growth Tracking
+
+Track baby growth records with:
+
+- Weight
+- Height
+- BMI
+- Growth chart visualization
+- Entry history
+
+### 📜 Vaccine Certificate
+
+The certificate screen shows completed vaccines in a clean child immunization certificate view, including baby details, completed count, pending count, and vaccine completion dates.
+
+### 🏥 MOH Clinic Support
+
+BabyBloom includes MOH clinic information and health support screens to help mothers quickly find useful clinic-related details.
+
+### 🚨 Emergency Contacts
+
+The app includes national emergency numbers and lets users save personal emergency contacts such as family members, doctors, or midwives.
+
+### ⚙️ Settings
+
+The settings screen includes:
+
+- Language selection
+- Dark mode toggle
+- Notification toggle
+- Reminder time picker
+- Signed-in account details
+- Sign out
+- About, privacy, and help/support links
+
+### 🌙 Dark Mode
+
+The full app supports dark mode with theme-aware cards, sheets, input fields, filter chips, certificate views, splash screen, and popup designs.
+
+## 🛠️ Tech Stack
 
 - Flutter
 - Dart
 - Firebase Auth
-- Cloud Firestore
-- SQLite for local storage
+- Firebase Cloud Firestore
+- Firebase Messaging
+- Firebase Analytics
+- SQLite with `sqflite`
+- Shared Preferences
 - Flutter Local Notifications
-- Material 3 UI
+- Material Design
 
-## 📁 Project structure
+## 📁 Project Structure
 
 ```text
 lib/
-  data/            # local and remote data helpers
+  data/            # notification helpers, Firebase content, static data
   database/        # SQLite database layer
   l10n/            # localization files
   models/          # app data models
-  screens/         # app screens and pages
-  theme/           # app theme and colors
-  utils/           # utility classes and helpers
+  screens/         # app pages and flows
+  theme/           # theme, colors, text styles
+  utils/           # utility services and helpers
   widgets/         # reusable UI components
 ```
 
@@ -55,190 +126,71 @@ lib/
 
 Before running the app, make sure you have:
 
-- Flutter SDK installed and added to your PATH
-- Android Studio or Xcode installed for device builds
-- An emulator or physical device connected
-- A Firebase project created in the Firebase console
-- Internet access for Firebase and notification services
+- Flutter SDK installed
+- Android Studio or Xcode for device builds
+- An emulator or physical device
+- A Firebase project
+- Internet access for Firebase services
 
-## ▶️ Getting started
+## ▶️ Getting Started
 
 1. Clone the repository
-   ```bash
-   git clone <your-repo-url>
-   cd ammata_help_lk-main
-   ```
+
+```bash
+git clone <your-repo-url>
+cd ammata_help_lk-main
+```
 
 2. Install dependencies
-   ```bash
-   flutter pub get
-   ```
+
+```bash
+flutter pub get
+```
 
 3. Configure Firebase
-   - Create a Firebase project at https://console.firebase.google.com/
-   - Enable the services used by the app, including:
-     - Authentication
-     - Firestore Database
-     - Cloud Messaging
-     - Analytics (optional but recommended)
-   - Register your app for Android and iOS in the Firebase console
-   - Download the configuration files:
-     - Android: google-services.json
-     - iOS: GoogleService-Info.plist
-   - Place them in the correct platform folders:
-     - Android: android/app/google-services.json
-     - iOS: ios/Runner/GoogleService-Info.plist
-   - If you are using FlutterFire, generate the configuration with:
-     ```bash
-     flutterfire configure
-     ```
-   - This project already includes Firebase initialization code in the app entry point, so the configuration files must be present before running the app
+
+- Create a Firebase project
+- Enable Authentication
+- Enable Firestore Database
+- Enable Cloud Messaging
+- Add Android and/or iOS app configuration files
+- Generate `firebase_options.dart` if needed:
+
+```bash
+flutterfire configure
+```
 
 4. Run the app
-   ```bash
-   flutter run
-   ```
-
-## 🔥 Firebase setup guide
-
-### 1) Create a Firebase project
-
-1. Open the Firebase console
-2. Click Add project
-3. Enter your project name
-4. Follow the setup prompts to create the project
-
-### 2) Enable required Firebase services
-
-In your Firebase project dashboard, enable:
-
-- Authentication
-- Firestore Database
-- Cloud Messaging
-- Analytics (recommended)
-
-### 3) Add Android app
-
-1. In Firebase, click Add app > Android
-2. Enter the Android package name
-3. Download google-services.json
-4. Place it in android/app/
-5. Make sure the Google services plugin is applied in android/build.gradle and android/app/build.gradle
-
-### 4) Add iOS app
-
-1. In Firebase, click Add app > iOS
-2. Enter your iOS bundle identifier
-3. Download GoogleService-Info.plist
-4. Add it to the Xcode project under ios/Runner/
-5. Ensure the Firebase iOS SDK is configured properly in your project
-
-### 5) Firebase rules and Firestore setup
-
-If you use Firestore, make sure your database rules allow read/write access for development:
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
-    }
-  }
-}
-```
-
-> For production, replace this with stricter rules.
-
-### 6) Local development tips
-
-- If Firebase initialization fails, confirm the configuration files are correctly placed
-- Make sure the app package name / bundle identifier matches the values you registered in Firebase
-- If you change your app ID, regenerate the Firebase config files
-
-## 🤖 Android deployment guide
-
-### Build prerequisites
-
-- Install Android Studio
-- Install the Android SDK
-- Create or select an Android emulator or connect a physical device
-
-### Check device connection
-
-```bash
-flutter devices
-```
-
-### Run on Android
-
-```bash
-flutter run -d <device-id>
-```
-
-### Build an APK
-
-```bash
-flutter build apk
-```
-
-### Build an App Bundle (recommended for Play Store)
-
-```bash
-flutter build appbundle
-```
-
-The generated output will be placed in:
-
-- APK: build/app/outputs/flutter-apk/app-release.apk
-- App Bundle: build/app/outputs/bundle/release/app-release.aab
-
-### Android signing (for release builds)
-
-Before publishing to the Play Store, create a keystore and configure signing:
-
-```bash
-keytool -genkey -v -keystore ~/upload-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias upload
-```
-
-Then configure signing in android/app/build.gradle and upload the release bundle to Google Play.
-
-## 🍎 iOS deployment guide
-
-### Build prerequisites
-
-- Install Xcode from the App Store
-- Sign in with your Apple Developer account
-- Set up an Apple team in Xcode
-
-### Run on iOS simulator
 
 ```bash
 flutter run
 ```
 
-### Build for iOS
+## 🔥 Firebase Notes
 
-```bash
-flutter build ios
-```
+BabyBloom uses Firebase for:
 
-### Prepare for App Store submission
+- User authentication
+- Cloud Firestore data sync helpers
+- Firebase Cloud Messaging
+- Analytics
 
-1. Open ios/Runner.xcworkspace in Xcode
-2. Select your signing team
-3. Set the bundle identifier
-4. Enable capabilities such as push notifications if required
-5. Archive the app from Xcode
-6. Upload the build to App Store Connect
+Make sure the Firebase configuration files match the app package name and bundle identifier used in your local project.
 
-### Important iOS notes
+## 🔔 Notification Notes
 
-- Firebase services on iOS require the GoogleService-Info.plist file
-- Push notifications may require APNs configuration
-- If the build fails, verify the Xcode signing settings and provisioning profile
+For vaccine reminders to work correctly:
 
-## 🔧 Useful commands
+- Allow notification permission on the device
+- Keep notifications enabled in the app settings
+- On Android, exact alarm permission may be requested
+- If exact alarms are unavailable, the app falls back to inexact reminders
+
+## 🌍 Localization
+
+The app supports multiple languages through Flutter localization files. When updating user-facing strings, refresh generated localization files if needed.
+
+## 🧪 Useful Commands
 
 ```bash
 flutter pub get
@@ -247,41 +199,10 @@ flutter test
 flutter run
 ```
 
-## 🌐 Localization
+## 🧡 Purpose
 
-The app includes localization support and is prepared for multiple languages. If you update the app strings, ensure the generated localization files are refreshed.
-
-## 🧪 Testing
-
-Run the test suite with:
-
-```bash
-flutter test
-```
-
-## 📦 Features in development / notes
-
-Some modules are connected to Firebase and local persistence, so it is important to keep Firebase setup consistent when testing on different devices.
-
-## 🤝 Contribution
-
-Contributions are welcome. If you would like to improve the app:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📜 Notes
-
-This project is intended as a helpful parenting companion app and can be extended with additional features such as:
-
-- pediatric growth charts
-- doctor visit tracking
-- reminder customization
-- health education content
-- cloud sync improvements
+BabyBloom is built as a caring companion for mothers and families. It helps organize baby health records, reminders, emergency contacts, and vaccine progress, while keeping the experience simple, soft, and supportive.
 
 ---
 
-Made with ❤️ for a smoother parenting experience.
+Made with ❤️ for mothers, babies, and smoother everyday care.

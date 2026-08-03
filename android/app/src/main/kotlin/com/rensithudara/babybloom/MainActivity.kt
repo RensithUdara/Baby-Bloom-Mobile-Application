@@ -1,4 +1,4 @@
-package com.example.babybloom
+package com.rensithudara.babybloom
 
 import io.flutter.embedding.android.FlutterActivity
 
