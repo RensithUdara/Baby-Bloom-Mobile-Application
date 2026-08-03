@@ -410,6 +410,11 @@ class DBHelper {
       }
     }
     await db.delete('vaccines', where: 'babyId = ?', whereArgs: [babyId]);
+    await db.delete(
+      'growth_records',
+      where: 'babyId = ?',
+      whereArgs: [babyId],
+    );
     final result = await db.delete(
       'babies',
       where: 'id = ?',
@@ -444,6 +449,18 @@ class DBHelper {
       );
     }
     return id;
+  }
+
+  Future<int> deleteVaccine(int vaccineId) async {
+    final db = await database;
+    await NotificationHelper().cancelVaccineReminders(vaccineId);
+    final result = await db.delete(
+      'vaccines',
+      where: 'id = ?',
+      whereArgs: [vaccineId],
+    );
+    await _tryFirebase(() => FirebaseContentRepository.deleteVaccine(vaccineId));
+    return result;
   }
 
   Future<List<Vaccine>> getVaccinesForBaby(int babyId) async {
