@@ -27,9 +27,6 @@
 .svn/
 .swiftpm/
 .idea/
-.vscode/
-.env
-.env.*
 !.env.example
 .dart_tool/
 .flutter-plugins
@@ -63,3 +60,5 @@ lib/firebase_options.dart
 **/google-services.json
 **/GoogleService-Info.plist
 **/firebase_options.dart
+config.bat
+node_modules
