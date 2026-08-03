@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../utils/vaccine_extensions.dart';
 import '../data/firebase_content_repository.dart';
 import '../widgets/app_top_bar.dart';
+import '../widgets/app_confirm_dialog.dart';
 
 class VaccineDetailsScreen extends StatefulWidget {
   final Vaccine vaccine;
@@ -30,6 +31,17 @@ class _VaccineDetailsScreenState extends State<VaccineDetailsScreen> {
   }
 
   Future<void> _markAsDone() async {
+    final confirmed = await showAppConfirmDialog(
+      context: context,
+      title: context.l10n.confirmMarkVaccineDoneTitle,
+      message: context.l10n.confirmMarkVaccineDoneMessage(_vaccine.vaccineName),
+      cancelLabel: context.l10n.cancel,
+      confirmLabel: context.l10n.confirmMarkDone,
+      icon: Icons.check_circle_rounded,
+      confirmColor: AppColors.completed,
+    );
+    if (confirmed != true || !mounted) return;
+
     await DBHelper().updateVaccineStatus(
       _vaccine.id!,
       'completed',

@@ -8,9 +8,11 @@ import '../database/db_helper.dart';
 import '../l10n/l10n.dart';
 import '../models/baby.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_confirm_dialog.dart';
 import '../widgets/app_top_bar.dart';
 import 'add_baby_screen.dart';
 import 'growth_chart_screen.dart';
+import 'home_screen.dart';
 
 class BabyProfileScreen extends StatefulWidget {
   final int babyId;
@@ -88,6 +90,34 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
     );
   }
 
+  Future<void> _deleteBaby() async {
+    final baby = _baby;
+    if (baby == null || baby.id == null) return;
+
+    final confirmed = await showAppConfirmDialog(
+      context: context,
+      title: context.l10n.deleteBabyTitle,
+      message: context.l10n.deleteBabyMessage(baby.name),
+      cancelLabel: context.l10n.cancel,
+      confirmLabel: context.l10n.deleteBaby,
+      icon: Icons.delete_outline_rounded,
+      confirmColor: AppColors.overdue,
+    );
+    if (confirmed != true || !mounted) return;
+
+    await DBHelper().deleteBaby(baby.id!);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(context.l10n.babyDeleted(baby.name)),
+        backgroundColor: AppColors.overdue,
+      ),
+    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -101,6 +131,11 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
             icon: Icons.edit_rounded,
             tooltip: l10n.editBaby,
             onPressed: _goToEditScreen,
+          ),
+          AppBarActionButton(
+            icon: Icons.delete_outline_rounded,
+            tooltip: l10n.deleteBaby,
+            onPressed: _deleteBaby,
           ),
         ],
       ),

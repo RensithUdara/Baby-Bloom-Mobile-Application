@@ -9,6 +9,7 @@ import '../widgets/vaccine_tile.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/empty_baby_state.dart';
 import '../widgets/app_top_bar.dart';
+import '../widgets/app_confirm_dialog.dart';
 import 'add_vaccine_screen.dart';
 import 'vaccine_details_screen.dart';
 import 'home_screen.dart';
@@ -55,6 +56,17 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   }
 
   Future<void> _markAsDone(Vaccine vaccine) async {
+    final confirmed = await showAppConfirmDialog(
+      context: context,
+      title: context.l10n.confirmMarkVaccineDoneTitle,
+      message: context.l10n.confirmMarkVaccineDoneMessage(vaccine.vaccineName),
+      cancelLabel: context.l10n.cancel,
+      confirmLabel: context.l10n.confirmMarkDone,
+      icon: Icons.check_circle_rounded,
+      confirmColor: AppColors.completed,
+    );
+    if (confirmed != true || !mounted) return;
+
     await DBHelper().updateVaccineStatus(
       vaccine.id!,
       'completed',
@@ -71,6 +83,27 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         duration: const Duration(seconds: 2),
       ),
     );
+  }
+
+  Future<bool> _confirmDeleteVaccine(Vaccine vaccine) async {
+    final confirmed = await showAppConfirmDialog(
+      context: context,
+      title: context.l10n.deleteVaccineTitle,
+      message: context.l10n.deleteVaccineMessage(vaccine.vaccineName),
+      cancelLabel: context.l10n.cancel,
+      confirmLabel: context.l10n.deleteVaccine,
+      icon: Icons.delete_outline_rounded,
+      confirmColor: AppColors.overdue,
+    );
+    return confirmed == true;
+  }
+
+  Future<void> _deleteVaccine(Vaccine vaccine) async {
+    final id = vaccine.id;
+    if (id == null) return;
+
+    setState(() => _vaccines.removeWhere((item) => item.id == id));
+    await DBHelper().deleteVaccine(id);
   }
 
   @override
@@ -154,23 +187,31 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                     itemCount: filtered.length,
                     itemBuilder: (context, index) {
                       final vaccine = filtered[index];
-                      return VaccineTile(
-                        vaccine: vaccine,
-                        onMarkDone: vaccine.uiStatus == VaccineStatus.completed
-                            ? null
-                            : () => _markAsDone(vaccine),
-                        onTap: () async {
-                          final updated = await Navigator.of(context)
-                              .push<Vaccine>(
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      VaccineDetailsScreen(vaccine: vaccine),
-                                ),
-                              );
-                          if (updated != null) {
-                            _loadData();
-                          }
-                        },
+                      return Dismissible(
+                        key: ValueKey('vaccine-${vaccine.id}'),
+                        direction: DismissDirection.endToStart,
+                        confirmDismiss: (_) => _confirmDeleteVaccine(vaccine),
+                        onDismissed: (_) => _deleteVaccine(vaccine),
+                        background: _buildDeleteBackground(),
+                        child: VaccineTile(
+                          vaccine: vaccine,
+                          onMarkDone:
+                              vaccine.uiStatus == VaccineStatus.completed
+                              ? null
+                              : () => _markAsDone(vaccine),
+                          onTap: () async {
+                            final updated = await Navigator.of(context)
+                                .push<Vaccine>(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        VaccineDetailsScreen(vaccine: vaccine),
+                                  ),
+                                );
+                            if (updated != null) {
+                              _loadData();
+                            }
+                          },
+                        ),
                       );
                     },
                   ),
@@ -237,6 +278,19 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDeleteBackground() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      alignment: Alignment.centerRight,
+      decoration: BoxDecoration(
+        color: AppColors.overdue,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: const Icon(Icons.delete_outline_rounded, color: Colors.white),
     );
   }
 }
