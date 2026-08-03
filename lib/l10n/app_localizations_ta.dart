@@ -182,6 +182,22 @@ class AppLocalizationsTa extends AppLocalizations {
   String get babyProfileNotFound => 'Baby profile not found';
 
   @override
+  String get deleteBaby => 'குழந்தையை நீக்கு';
+
+  @override
+  String get deleteBabyTitle => 'குழந்தை சுயவிவரத்தை நீக்கவா?';
+
+  @override
+  String deleteBabyMessage(String name) {
+    return '$name சுயவிவரம், தடுப்பூசி பதிவுகள், நினைவூட்டல்கள் மற்றும் வளர்ச்சி பதிவுகளை நீக்கவா? இந்த செயலை மீண்டும் மாற்ற முடியாது.';
+  }
+
+  @override
+  String babyDeleted(String name) {
+    return '$name சுயவிவரம் நீக்கப்பட்டது';
+  }
+
+  @override
   String photoSaveFailed(String error) {
     return 'Could not save photo: $error';
   }
@@ -244,6 +260,28 @@ class AppLocalizationsTa extends AppLocalizations {
   String markedAsDone(String name) {
     return '$name marked as done';
   }
+
+  @override
+  String get confirmMarkVaccineDoneTitle => 'தடுப்பூசியை முடிந்ததாக குறிக்கவா?';
+
+  @override
+  String confirmMarkVaccineDoneMessage(String name) {
+    return '$name தடுப்பூசி குழந்தைக்கு கொடுக்கப்பட்டதா? இந்த செயலை மீண்டும் மாற்ற முடியாது.';
+  }
+
+  @override
+  String get confirmMarkDone => 'முடிந்தது';
+
+  @override
+  String get deleteVaccineTitle => 'தடுப்பூசியை நீக்கவா?';
+
+  @override
+  String deleteVaccineMessage(String name) {
+    return 'இந்த குழந்தையின் தடுப்பூசி பட்டியலிலிருந்து $name ஐ நீக்கவா? இதன் நினைவூட்டல்களும் நீக்கப்படும்.';
+  }
+
+  @override
+  String get deleteVaccine => 'தடுப்பூசியை நீக்கு';
 
   @override
   String get dueDate => 'Due Date';

@@ -436,6 +436,30 @@ abstract class AppLocalizations {
   /// **'Baby profile not found'**
   String get babyProfileNotFound;
 
+  /// No description provided for @deleteBaby.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Baby'**
+  String get deleteBaby;
+
+  /// No description provided for @deleteBabyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete baby profile?'**
+  String get deleteBabyTitle;
+
+  /// No description provided for @deleteBabyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {name}\'s profile, vaccine records, reminders, and growth records? This action cannot be undone.'**
+  String deleteBabyMessage(String name);
+
+  /// No description provided for @babyDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s profile deleted'**
+  String babyDeleted(String name);
+
   /// No description provided for @photoSaveFailed.
   ///
   /// In en, this message translates to:
@@ -507,6 +531,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} marked as done'**
   String markedAsDone(String name);
+
+  /// No description provided for @confirmMarkVaccineDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark vaccine as done?'**
+  String get confirmMarkVaccineDoneTitle;
+
+  /// No description provided for @confirmMarkVaccineDoneMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure {name} has received this vaccine? This action cannot be undone.'**
+  String confirmMarkVaccineDoneMessage(String name);
+
+  /// No description provided for @confirmMarkDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark Done'**
+  String get confirmMarkDone;
+
+  /// No description provided for @deleteVaccineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete vaccine?'**
+  String get deleteVaccineTitle;
+
+  /// No description provided for @deleteVaccineMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {name} from this baby\'s vaccine list? This will also remove its reminders.'**
+  String deleteVaccineMessage(String name);
+
+  /// No description provided for @deleteVaccine.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Vaccine'**
+  String get deleteVaccine;
 
   /// No description provided for @dueDate.
   ///

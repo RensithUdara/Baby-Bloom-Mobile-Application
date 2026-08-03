@@ -182,6 +182,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get babyProfileNotFound => 'Baby profile not found';
 
   @override
+  String get deleteBaby => 'Delete Baby';
+
+  @override
+  String get deleteBabyTitle => 'Delete baby profile?';
+
+  @override
+  String deleteBabyMessage(String name) {
+    return 'Delete $name\'s profile, vaccine records, reminders, and growth records? This action cannot be undone.';
+  }
+
+  @override
+  String babyDeleted(String name) {
+    return '$name\'s profile deleted';
+  }
+
+  @override
   String photoSaveFailed(String error) {
     return 'Could not save photo: $error';
   }
@@ -244,6 +260,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String markedAsDone(String name) {
     return '$name marked as done';
   }
+
+  @override
+  String get confirmMarkVaccineDoneTitle => 'Mark vaccine as done?';
+
+  @override
+  String confirmMarkVaccineDoneMessage(String name) {
+    return 'Are you sure $name has received this vaccine? This action cannot be undone.';
+  }
+
+  @override
+  String get confirmMarkDone => 'Mark Done';
+
+  @override
+  String get deleteVaccineTitle => 'Delete vaccine?';
+
+  @override
+  String deleteVaccineMessage(String name) {
+    return 'Delete $name from this baby\'s vaccine list? This will also remove its reminders.';
+  }
+
+  @override
+  String get deleteVaccine => 'Delete Vaccine';
 
   @override
   String get dueDate => 'Due Date';
