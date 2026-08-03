@@ -145,7 +145,7 @@ class FirebaseContentRepository {
     required String gender,
   }) async {
     final db = _db;
-    if (db == null) return const [];
+    if (db == null) return _localVaccineSchedule(gender);
 
     try {
       final snapshot = await db
@@ -153,9 +153,10 @@ class FirebaseContentRepository {
           .orderBy('order')
           .get();
       final items = snapshot.docs.map(FirebaseVaccineItem.fromDoc).toList();
+      if (items.isEmpty) return _localVaccineSchedule(gender);
       return _filterByGender(items, gender);
     } catch (_) {
-      return const [];
+      return _localVaccineSchedule(gender);
     }
   }
 
@@ -195,10 +196,7 @@ class FirebaseContentRepository {
           title: LocalizedText.fromMap(
             data['title'] as Map<String, dynamic>?,
           ).current,
-          icon: IconData(
-            data['icon'] as int? ?? Icons.favorite_rounded.codePoint,
-            fontFamily: 'MaterialIcons',
-          ),
+          icon: _materialIconFromCodePoint(data['icon'] as int?),
           tips: rawTips
               .map(
                 (tip) =>
@@ -437,6 +435,226 @@ class FirebaseContentRepository {
       return items.where((v) => !v.femaleOnly).toList();
     }
     return items;
+  }
+
+  static IconData _materialIconFromCodePoint(int? codePoint) {
+    switch (codePoint) {
+      case 0xe25a:
+        return Icons.child_care_rounded;
+      case 0xe3f1:
+        return Icons.favorite_rounded;
+      case 0xf055f:
+        return Icons.health_and_safety_rounded;
+      case 0xe3f3:
+        return Icons.local_hospital_rounded;
+      case 0xf05a6:
+        return Icons.vaccines_rounded;
+      case 0xe56c:
+        return Icons.restaurant_rounded;
+      case 0xe549:
+        return Icons.bedtime_rounded;
+      case 0xf07f1:
+        return Icons.tips_and_updates_rounded;
+      default:
+        return Icons.favorite_rounded;
+    }
+  }
+
+  static List<FirebaseVaccineItem> _localVaccineSchedule(String gender) {
+    return _filterByGender(const [
+      FirebaseVaccineItem(
+        id: 'bcg',
+        name: LocalizedText(en: 'BCG', si: 'BCG', ta: 'BCG'),
+        doseNumber: 1,
+        ageInDays: 0,
+        ageLabel: LocalizedText(en: 'At birth', si: 'At birth', ta: 'At birth'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 1,
+      ),
+      FirebaseVaccineItem(
+        id: 'opv_0',
+        name: LocalizedText(en: 'OPV 0', si: 'OPV 0', ta: 'OPV 0'),
+        doseNumber: 0,
+        ageInDays: 0,
+        ageLabel: LocalizedText(en: 'At birth', si: 'At birth', ta: 'At birth'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 2,
+      ),
+      FirebaseVaccineItem(
+        id: 'pentavalent_1',
+        name: LocalizedText(
+          en: 'Pentavalent 1',
+          si: 'Pentavalent 1',
+          ta: 'Pentavalent 1',
+        ),
+        doseNumber: 1,
+        ageInDays: 60,
+        ageLabel: LocalizedText(en: '2 months', si: '2 months', ta: '2 months'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 3,
+      ),
+      FirebaseVaccineItem(
+        id: 'opv_1',
+        name: LocalizedText(en: 'OPV 1', si: 'OPV 1', ta: 'OPV 1'),
+        doseNumber: 1,
+        ageInDays: 60,
+        ageLabel: LocalizedText(en: '2 months', si: '2 months', ta: '2 months'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 4,
+      ),
+      FirebaseVaccineItem(
+        id: 'fipv_1',
+        name: LocalizedText(en: 'fIPV 1', si: 'fIPV 1', ta: 'fIPV 1'),
+        doseNumber: 1,
+        ageInDays: 60,
+        ageLabel: LocalizedText(en: '2 months', si: '2 months', ta: '2 months'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 5,
+      ),
+      FirebaseVaccineItem(
+        id: 'pentavalent_2',
+        name: LocalizedText(
+          en: 'Pentavalent 2',
+          si: 'Pentavalent 2',
+          ta: 'Pentavalent 2',
+        ),
+        doseNumber: 2,
+        ageInDays: 120,
+        ageLabel: LocalizedText(en: '4 months', si: '4 months', ta: '4 months'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 6,
+      ),
+      FirebaseVaccineItem(
+        id: 'opv_2',
+        name: LocalizedText(en: 'OPV 2', si: 'OPV 2', ta: 'OPV 2'),
+        doseNumber: 2,
+        ageInDays: 120,
+        ageLabel: LocalizedText(en: '4 months', si: '4 months', ta: '4 months'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 7,
+      ),
+      FirebaseVaccineItem(
+        id: 'fipv_2',
+        name: LocalizedText(en: 'fIPV 2', si: 'fIPV 2', ta: 'fIPV 2'),
+        doseNumber: 2,
+        ageInDays: 120,
+        ageLabel: LocalizedText(en: '4 months', si: '4 months', ta: '4 months'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 8,
+      ),
+      FirebaseVaccineItem(
+        id: 'pentavalent_3',
+        name: LocalizedText(
+          en: 'Pentavalent 3',
+          si: 'Pentavalent 3',
+          ta: 'Pentavalent 3',
+        ),
+        doseNumber: 3,
+        ageInDays: 180,
+        ageLabel: LocalizedText(en: '6 months', si: '6 months', ta: '6 months'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 9,
+      ),
+      FirebaseVaccineItem(
+        id: 'opv_3',
+        name: LocalizedText(en: 'OPV 3', si: 'OPV 3', ta: 'OPV 3'),
+        doseNumber: 3,
+        ageInDays: 180,
+        ageLabel: LocalizedText(en: '6 months', si: '6 months', ta: '6 months'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 10,
+      ),
+      FirebaseVaccineItem(
+        id: 'mmr_1',
+        name: LocalizedText(en: 'MMR 1', si: 'MMR 1', ta: 'MMR 1'),
+        doseNumber: 1,
+        ageInDays: 270,
+        ageLabel: LocalizedText(en: '9 months', si: '9 months', ta: '9 months'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 11,
+      ),
+      FirebaseVaccineItem(
+        id: 'je',
+        name: LocalizedText(en: 'JE', si: 'JE', ta: 'JE'),
+        doseNumber: 1,
+        ageInDays: 365,
+        ageLabel: LocalizedText(en: '1 year', si: '1 year', ta: '1 year'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 12,
+      ),
+      FirebaseVaccineItem(
+        id: 'mmr_2',
+        name: LocalizedText(en: 'MMR 2', si: 'MMR 2', ta: 'MMR 2'),
+        doseNumber: 2,
+        ageInDays: 1095,
+        ageLabel: LocalizedText(en: '3 years', si: '3 years', ta: '3 years'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 13,
+      ),
+      FirebaseVaccineItem(
+        id: 'dpt_1',
+        name: LocalizedText(en: 'DPT 1', si: 'DPT 1', ta: 'DPT 1'),
+        doseNumber: 1,
+        ageInDays: 1825,
+        ageLabel: LocalizedText(en: '5 years', si: '5 years', ta: '5 years'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 14,
+      ),
+      FirebaseVaccineItem(
+        id: 'opv_4',
+        name: LocalizedText(en: 'OPV 4', si: 'OPV 4', ta: 'OPV 4'),
+        doseNumber: 4,
+        ageInDays: 1825,
+        ageLabel: LocalizedText(en: '5 years', si: '5 years', ta: '5 years'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 15,
+      ),
+      FirebaseVaccineItem(
+        id: 'hpv_1',
+        name: LocalizedText(en: 'HPV 1', si: 'HPV 1', ta: 'HPV 1'),
+        doseNumber: 1,
+        ageInDays: 3650,
+        ageLabel: LocalizedText(en: '10 years', si: '10 years', ta: '10 years'),
+        femaleOnly: true,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 16,
+      ),
+      FirebaseVaccineItem(
+        id: 'hpv_2',
+        name: LocalizedText(en: 'HPV 2', si: 'HPV 2', ta: 'HPV 2'),
+        doseNumber: 2,
+        ageInDays: 3830,
+        ageLabel: LocalizedText(en: '10 years', si: '10 years', ta: '10 years'),
+        femaleOnly: true,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 17,
+      ),
+      FirebaseVaccineItem(
+        id: 'atd',
+        name: LocalizedText(en: 'aTd', si: 'aTd', ta: 'aTd'),
+        doseNumber: 1,
+        ageInDays: 4015,
+        ageLabel: LocalizedText(en: '11 years', si: '11 years', ta: '11 years'),
+        femaleOnly: false,
+        description: LocalizedText(en: '', si: '', ta: ''),
+        order: 18,
+      ),
+    ], gender);
   }
 
   static String _infoKey(String rawCode) {

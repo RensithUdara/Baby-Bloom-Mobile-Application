@@ -312,7 +312,7 @@ class DBHelper {
       birthWeightKg: baby.birthWeightKg,
       hospital: baby.hospital,
     );
-    await FirebaseContentRepository.saveBaby(savedBaby);
+    await _tryFirebase(() => FirebaseContentRepository.saveBaby(savedBaby));
 
     final applicableVaccines =
         await FirebaseContentRepository.getVaccineSchedule(gender: baby.gender);
@@ -332,8 +332,10 @@ class DBHelper {
       final vaccineId = await db.insert('vaccines', vaccine.toMap());
 
       vaccine.id = vaccineId;
-      await FirebaseContentRepository.saveVaccine(vaccine);
-      await NotificationHelper().scheduleVaccineReminders(vaccine, baby.name);
+      await _tryFirebase(() => FirebaseContentRepository.saveVaccine(vaccine));
+      await _tryNotification(
+        () => NotificationHelper().scheduleVaccineReminders(vaccine, baby.name),
+      );
     }
 
     await setActiveBaby(babyId);
@@ -389,7 +391,7 @@ class DBHelper {
       where: 'id = ?',
       whereArgs: [baby.id],
     );
-    await FirebaseContentRepository.saveBaby(baby);
+    await _tryFirebase(() => FirebaseContentRepository.saveBaby(baby));
     return result;
   }
 
@@ -431,12 +433,14 @@ class DBHelper {
     final db = await database;
     final id = await db.insert('vaccines', vaccine.toMap());
     vaccine.id = id;
-    await FirebaseContentRepository.saveVaccine(vaccine);
+    await _tryFirebase(() => FirebaseContentRepository.saveVaccine(vaccine));
     if (vaccine.status == 'pending') {
       final baby = await getBaby(vaccine.babyId);
-      await NotificationHelper().scheduleVaccineReminders(
-        vaccine,
-        baby?.name ?? 'Baby',
+      await _tryNotification(
+        () => NotificationHelper().scheduleVaccineReminders(
+          vaccine,
+          baby?.name ?? 'Baby',
+        ),
       );
     }
     return id;
@@ -491,17 +495,21 @@ class DBHelper {
       if (updated.isNotEmpty) {
         final vaccine = Vaccine.fromMap(updated.first);
         final baby = await getBaby(vaccine.babyId);
-        await NotificationHelper().scheduleVaccineReminders(
-          vaccine,
-          baby?.name ?? 'Baby',
+        await _tryNotification(
+          () => NotificationHelper().scheduleVaccineReminders(
+            vaccine,
+            baby?.name ?? 'Baby',
+          ),
         );
       }
     }
 
-    await FirebaseContentRepository.updateVaccineStatus(
-      vaccineId: vaccineId,
-      status: status,
-      completedDate: completedDate,
+    await _tryFirebase(
+      () => FirebaseContentRepository.updateVaccineStatus(
+        vaccineId: vaccineId,
+        status: status,
+        completedDate: completedDate,
+      ),
     );
 
     return result;
@@ -625,7 +633,21 @@ class DBHelper {
       where: 'scheduledDate > ?',
       whereArgs: [now],
     );
-    await FirebaseContentRepository.deleteUpcomingNotificationHistory();
+    await _tryFirebase(
+      FirebaseContentRepository.deleteUpcomingNotificationHistory,
+    );
+  }
+
+  Future<void> _tryFirebase(Future<void> Function() action) async {
+    try {
+      await action();
+    } catch (_) {}
+  }
+
+  Future<void> _tryNotification(Future<void> Function() action) async {
+    try {
+      await action();
+    } catch (_) {}
   }
 
   Future<void> closeDB() async {
