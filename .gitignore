@@ -60,5 +60,8 @@ lib/firebase_options.dart
 **/google-services.json
 **/GoogleService-Info.plist
 **/firebase_options.dart
-config.bat
 node_modules
+.env
+.env.*
+.env.local
+.env.production
